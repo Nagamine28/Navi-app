@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
+import { Animated, View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
 import MapView, { MapMarker, AnimatedRegion } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import { getCurrentLocation } from '../../helper/helperFunction';
+import { locationPermission, getCurrentLocation } from '../../helper/helperFunction';
 import imagePath from '../../constants/imagePath';
 
 const screen = Dimensions.get('window');
@@ -46,28 +46,33 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
   });
 
   const { curLoc, time, distance, destinationCords, coordinate, heading } = state;
+  const updateState = (data: Partial<State>) => setState((state) => ({ ...state, ...data }));
 
   useEffect(() => {
     getLiveLocation();
   }, []);
 
   const getLiveLocation = async () => {
-    try {
-      const { latitude, longitude, heading } = await getCurrentLocation();
-      console.log("get live location after 4 second", heading)
-      animate(latitude, longitude)
-      setState((prevState) => ({
-        ...prevState,
-        curLoc: { latitude, longitude },
-        coordinate: new AnimatedRegion({
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        }),
-      }));
-    } catch (error) {
-      console.log('Error while getting current location: ', error);
+    const locPermissionDenied: string = await locationPermission();
+    if (locPermissionDenied === 'granted') {
+      try {
+        const location = await getCurrentLocation();
+        const { latitude, longitude, heading } = location.coords;
+        console.log("get live location after 4 second", heading)
+        animate(latitude, longitude)
+        updateState({
+          heading: heading,
+          curLoc: { latitude, longitude },
+          coordinate: new AnimatedRegion({
+            latitude: latitude,
+            longitude: longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          }),
+        })
+      } catch (error) {
+        console.log('Error while getting current location: ', error);
+      }
     }
   }
 
@@ -83,10 +88,9 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const fetchValue = (data: { destinationCords: Coordinate }) => {
-    setState((prevState) => ({
-      ...prevState,
-      destinationCords: data.destinationCords,
-    }));
+    updateState({
+      destinationCords: data.destinationCords
+    })
   }
 
   const animate = (latitude: number, longitude: number) => {
@@ -94,30 +98,37 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
       latitude,
       longitude,
     };
-    if (markerRef.current) {
-      markerRef.current.animateMarkerToCoordinate(
-        newCoordinate,
-        7000,
-      );
+    if (Platform.OS === 'android') {
+      if (markerRef.current) {
+        markerRef.current.animateMarkerToCoordinate(
+          newCoordinate,
+          7000,
+        )
+      } else {
+        // coordinate.timing(newCoordinate).start();
+        Animated.timing(coordinate, {
+          toValue: newCoordinate,
+          useNativeDriver: false,
+        }).start();
+      }
     }
   };
 
   const onCenter = () => {
-    mapRef.current.animateToRegion({
+    mapRef.current?.animateToRegion({
       latitude: curLoc.latitude,
       longitude: curLoc.longitude,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
     });
   };
 
   const fetchTime = (d: number, t: number) => {
-    setState((prevState) => ({
-      ...prevState,
+    updateState({
       time: t,
       distance: d,
-    }));
-  };
+    })
+  }
 
   return (
     <View style={styles.container}>
@@ -153,14 +164,17 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
               resizeMode='contain'
             />
           </MapMarker.Animated>
+
           {Object.keys(destinationCords).length > 0 && (
-            <MapMarker coordinate={destinationCords} image={imagePath.icGreenMarker} />>
+            <MapMarker coordinate={destinationCords} image={imagePath.icGreenMarker} />
           )}
+
           {Object.keys(destinationCords).length > 0 && (
             <MapViewDirections
               origin={curLoc}
               destination={destinationCords}
-              apikey='AIzaSyDNDqsqCHD2WMG9l-w58WIudhAu7w_0UCU'
+              apikey=''
+              
               strokeWidth={6}
               strokeColor='red'
               optimizeWaypoints={true}
