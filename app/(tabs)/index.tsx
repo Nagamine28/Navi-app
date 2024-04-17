@@ -1,8 +1,8 @@
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import MapView, { Marker } from "react-native-maps";
+
 import MapViewDirections from 'react-native-maps-directions';
 import { StyleSheet, Dimensions, Platform } from "react-native";
 
@@ -10,11 +10,6 @@ import { locationPermission, getCurrentLocation } from '../../helper/helperFunct
 
 // smooth tracking
 export default function TabOneScreen() {
-
-  const origin = {latitude: 37.7749, longitude: -122.4194}; // 例としてサンフランシスコ
-  const destination = {latitude: 34.0522, longitude: -118.2437}; // 例としてロサンゼルス
-
-
   const [state, setState] = useState({
     curLoc: {
       latitude: 37.7749,
@@ -24,6 +19,8 @@ export default function TabOneScreen() {
 
   const [permissionStatus, setPermissionStatus] = useState<string | null>(null);
   const [altitude, setAltitude] = useState<number | null>(null);
+
+  const mapRef = useRef<MapView>(null);
 
   const getLiveLocation = async () => {
     const locPermissionDenied: string = await locationPermission();
@@ -41,6 +38,12 @@ export default function TabOneScreen() {
             longitude: location.coords.longitude,
           },
         })
+        mapRef.current?.animateToRegion({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.00461,
+          longitudeDelta: 0.00210,
+        });
       } catch (error) {
         setPermissionStatus("err");
         console.error(error);
@@ -70,6 +73,11 @@ export default function TabOneScreen() {
       getLiveLocation();
   }, []);
 
+  useEffect(() => {
+    const intervalId = setInterval(getLiveLocation, 6000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
@@ -91,6 +99,7 @@ export default function TabOneScreen() {
           apikey={"YOUR_API_KEY"}
         />
       </MapView>
+
     </View>
   );
 }
