@@ -34,6 +34,12 @@ export default function TabOneScreen() {
         console.log(location);
         setPermissionStatus(locPermissionDenied);
         setAltitude(location.coords.altitude);
+        setState({
+          curLoc: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+        })
       } catch (error) {
         setPermissionStatus("err");
         console.error(error);
