@@ -51,6 +51,11 @@ export default function TabOneScreen() {
       getLiveLocation();
   }, []);
 
+  useEffect(() => {
+    const intervalId = setInterval(getLiveLocation, 6000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
