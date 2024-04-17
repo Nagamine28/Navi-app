@@ -1,4 +1,5 @@
 import * as Location from 'expo-location';
+import { LocationObject } from 'expo-location';
 
 export const locationPermission = async (): Promise<string> => {
     try {
@@ -11,3 +12,13 @@ export const locationPermission = async (): Promise<string> => {
         return Promise.reject(error);
     }
 };
+
+export const getCurrentLocation = (): Promise<LocationObject> => new Promise(async (resolve, reject) => {
+    try {
+        let location: LocationObject = await Location.getCurrentPositionAsync({});
+        console.log(JSON.stringify(location));
+        resolve(location);
+    } catch (error) {
+        reject(error);
+    }
+});

@@ -6,7 +6,7 @@ import MapView ,{Marker} from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { StyleSheet, Dimensions } from 'react-native';
 
-import { locationPermission } from '../../helper/helperFunction';
+import { locationPermission, getCurrentLocation } from '../../helper/helperFunction';
 
 // smooth tracking
 export default function TabOneScreen() {
@@ -22,12 +22,23 @@ export default function TabOneScreen() {
   })
 
   const [permissionStatus, setPermissionStatus] = useState<string | null>(null);
+  const [altitude, setAltitude] = useState<number | null>(null);
 
   const getLiveLocation = async () => {
     const locPermissionDenied: string = await locationPermission();
     // ここに位置情報の取得と処理のコードを追加します
     console.log(locPermissionDenied)
-    setPermissionStatus(locPermissionDenied);
+    if (locPermissionDenied === 'granted') {
+      try {
+        let location = await getCurrentLocation();
+        console.log(location);
+        setPermissionStatus(locPermissionDenied);
+        setAltitude(location.coords.altitude);
+      } catch (error) {
+        setPermissionStatus("err");
+        console.error(error);
+      }
+    }
   }
 
   useEffect(() => {
@@ -40,6 +51,7 @@ export default function TabOneScreen() {
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/(tabs)/index.tsx" />
       <Text>Location Permission Status: {permissionStatus}</Text>
+      <Text>Altitude: {altitude}</Text>
       <MapView style={styles.map} >
         <Marker coordinate={state.curLoc} />
         <MapViewDirections
