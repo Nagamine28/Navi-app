@@ -18,7 +18,11 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "types": [
+      "google.maps",
+      "node"
+    ]
   },
   "include": [
     "**/*.ts",

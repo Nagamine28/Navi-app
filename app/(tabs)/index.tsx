@@ -4,6 +4,7 @@ import MapView, { MapMarker, AnimatedRegion } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { locationPermission, getCurrentLocation } from '../../helper/helperFunction';
 import imagePath from '../../constants/imagePath';
+import InputDestinationArea from '@/components/InputDestinationArea';
 
 const screen = Dimensions.get('window');
 const ASPECT_RATIO = screen.width / screen.height;
@@ -27,16 +28,19 @@ interface State {
 const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef<MapMarker>(null);
+  //皇居の座標
+  const defaultLatitude = 35.6802117;
+  const defaultLongitude = 139.7576692;
 
   const [state, setState] = useState<State>({
     curLoc: {
-      latitude: 30.7046,
-      longitude: 77.1025,
+      latitude: defaultLatitude,
+      longitude: defaultLongitude,
     },
     destinationCords: { latitude: 0, longitude: 0 },
     coordinate: new Animated.ValueXY({
-      x: 30.7046,
-      y: 77.1025,
+      x: defaultLatitude,
+      y: defaultLongitude,
     }),
     time: 0,
     distance: 0,
@@ -207,10 +211,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.bottomCard}>
-        <Text>Where are you going..?</Text>
-        <TouchableOpacity onPress={onPressLocation} style={styles.inputStyle}>
-          <Text>Choose Location</Text>
-        </TouchableOpacity>
+        <InputDestinationArea  />
       </View>
     </View>
   );
