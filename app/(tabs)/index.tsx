@@ -169,7 +169,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
             <MapViewDirections
               origin={curLoc}
               destination={destinationCords}
-              apikey=''
+              apikey={process.env.GOOGLE_MAPS_API_KEY || ''}
               strokeWidth={6}
               strokeColor='red'
               optimizeWaypoints={true}
