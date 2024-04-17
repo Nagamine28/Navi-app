@@ -18,7 +18,7 @@ interface Coordinate {
 interface State {
   curLoc: Coordinate;
   destinationCords: Coordinate;
-  coordinate: AnimatedRegion;
+  coordinate: Animated.ValueXY;
   time: number;
   distance: number;
   heading: number;
@@ -34,11 +34,9 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
       longitude: 77.1025,
     },
     destinationCords: { latitude: 0, longitude: 0 },
-    coordinate: new AnimatedRegion({
-      latitude: 30.7046,
-      longitude: 77.1025,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA,
+    coordinate: new Animated.ValueXY({
+      x: 30.7046,
+      y: 77.1025,
     }),
     time: 0,
     distance: 0,
@@ -61,13 +59,11 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
         console.log("get live location after 4 second", heading)
         animate(latitude, longitude)
         updateState({
-          heading: heading,
+          // heading: heading,
           curLoc: { latitude, longitude },
-          coordinate: new AnimatedRegion({
-            latitude: latitude,
-            longitude: longitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
+          coordinate: new Animated.ValueXY({
+            x: latitude,
+            y: longitude
           }),
         })
       } catch (error) {
@@ -107,7 +103,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
       } else {
         // coordinate.timing(newCoordinate).start();
         Animated.timing(coordinate, {
-          toValue: newCoordinate,
+          toValue: {x: newCoordinate.latitude, y: newCoordinate.longitude},
           useNativeDriver: false,
         }).start();
       }
@@ -151,8 +147,8 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
           <MapMarker.Animated
             ref={markerRef}
             coordinate={{
-              latitude: coordinate.latitude,
-              longitude: coordinate.longitude
+              latitude: coordinate.x,
+              longitude: coordinate.y
             }}>
             <Image
               source={imagePath.icBike}
@@ -174,7 +170,6 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
               origin={curLoc}
               destination={destinationCords}
               apikey=''
-              
               strokeWidth={6}
               strokeColor='red'
               optimizeWaypoints={true}
