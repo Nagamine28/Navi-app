@@ -1,12 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Animated, View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
-import MapView, { MapMarker, AnimatedRegion } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
-import { locationPermission, getCurrentLocation } from '../../helper/helperFunction';
-import imagePath from '../../constants/imagePath';
-import InputDestinationArea from '@/components/InputDestinationArea';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Animated,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Image,
+  Platform,
+} from "react-native";
+import MapView, { MapMarker, AnimatedRegion } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
+import {
+  locationPermission,
+  getCurrentLocation,
+} from "../../helper/helperFunction";
+import imagePath from "../../constants/imagePath";
+import InputDestinationArea from "@/components/InputDestinationArea";
 
-const screen = Dimensions.get('window');
+const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
@@ -47,8 +59,24 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
     heading: 0,
   });
 
-  const { curLoc, time, distance, destinationCords, coordinate, heading } = state;
-  const updateState = (data: Partial<State>) => setState((state) => ({ ...state, ...data }));
+  const setCoordinate = (latitude: number, longitude: number) => {
+    setState((state) => ({
+      ...state,
+      coordinate: new Animated.ValueXY({
+        x: latitude,
+        y: longitude,
+      }),
+      curLoc: {
+        latitude: latitude,
+        longitude: longitude,
+      },
+    }));
+  }
+
+  const { curLoc, time, distance, destinationCords, coordinate, heading } =
+    state;
+  const updateState = (data: Partial<State>) =>
+    setState((state) => ({ ...state, ...data }));
 
   useEffect(() => {
     getLiveLocation();
@@ -56,25 +84,25 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const getLiveLocation = async () => {
     const locPermissionDenied: string = await locationPermission();
-    if (locPermissionDenied === 'granted') {
+    if (locPermissionDenied === "granted") {
       try {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
-        console.log("get live location after 4 second", heading)
-        animate(latitude, longitude)
+        console.log("get live location after 4 second", heading);
+        animate(latitude, longitude);
         updateState({
           // heading: heading,
           curLoc: { latitude, longitude },
           coordinate: new Animated.ValueXY({
             x: latitude,
-            y: longitude
+            y: longitude,
           }),
-        })
+        });
       } catch (error) {
-        console.log('Error while getting current location: ', error);
+        console.log("Error while getting current location: ", error);
       }
     }
-  }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -84,30 +112,27 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
   }, []);
 
   const onPressLocation = async () => {
-    navigation.navigate('chooseLocation', { getCordinates: fetchValue });
+    navigation.navigate("chooseLocation", { getCordinates: fetchValue });
   };
 
   const fetchValue = (data: { destinationCords: Coordinate }) => {
     updateState({
-      destinationCords: data.destinationCords
-    })
-  }
+      destinationCords: data.destinationCords,
+    });
+  };
 
   const animate = (latitude: number, longitude: number) => {
     const newCoordinate = {
       latitude,
       longitude,
     };
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       if (markerRef.current) {
-        markerRef.current.animateMarkerToCoordinate(
-          newCoordinate,
-          7000,
-        )
+        markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000);
       } else {
         // coordinate.timing(newCoordinate).start();
         Animated.timing(coordinate, {
-          toValue: {x: newCoordinate.latitude, y: newCoordinate.longitude},
+          toValue: { x: newCoordinate.latitude, y: newCoordinate.longitude },
           useNativeDriver: false,
         }).start();
       }
@@ -119,7 +144,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
       latitude: curLoc.latitude,
       longitude: curLoc.longitude,
       latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA
+      longitudeDelta: LONGITUDE_DELTA,
     });
   };
 
@@ -127,8 +152,8 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
     updateState({
       time: t,
       distance: d,
-    })
-  }
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -217,7 +242,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.bottomCard}>
-        <InputDestinationArea />
+        <InputDestinationArea setCoordinate={setCoordinate} />
       </View>
     </View>
   );
@@ -228,19 +253,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomCard: {
-    backgroundColor: 'white',
-    width: '100%',
+    backgroundColor: "white",
+    width: "100%",
     padding: 30,
     borderTopEndRadius: 24,
     borderTopStartRadius: 24,
   },
   inputStyle: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 4,
     borderWidth: 1,
-    alignItems: 'center',
+    alignItems: "center",
     height: 48,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: 16,
   },
 });
