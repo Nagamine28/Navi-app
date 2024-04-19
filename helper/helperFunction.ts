@@ -19,7 +19,7 @@ export const locationPermission = async (): Promise<string> => {
 export const getCurrentLocation = (): Promise<LocationObject> => new Promise(async (resolve, reject) => {
     try {
         let location: LocationObject = await Location.getCurrentPositionAsync({});
-        console.log(JSON.stringify(location));
+        // console.log(JSON.stringify(location));
         resolve(location);
     } catch (error) {
         reject(error);
@@ -62,7 +62,7 @@ export const checkSteps = async (state: { curLoc: { latitude: number, longitude:
             }
             console.log('現在地点 : ', curLoc.latitude, ', ', curLoc.longitude)
             console.log('比較座標 : ', step.latitude, ', ', step.longitude)
-            console.log('距離 : ', distance)
+            // console.log('距離 : ', distance)
             return stepsPosition;
         }
     }
