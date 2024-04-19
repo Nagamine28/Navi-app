@@ -18,7 +18,7 @@ import {
   checkSteps,
 } from "../../helper/helperFunction";
 
-import { steps } from '../../helper/types';
+import { Steps, State, MapDirectionsLegsStep, } from "../../helper/types";
 import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 
@@ -27,58 +27,33 @@ const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-interface Coordinate {
-  latitude: number;
-  longitude: number;
-}
-
-interface State {
-  curLoc: Coordinate;
-  destinationCords: Coordinate;
-  coordinate: Animated.ValueXY;
-  time: number;
-  distance: number;
-  heading: number;
-}
-
-interface Step {
-  distance: {
-    text: string,
-    value: number
-  },
-  duration: {
-    text: string,
-    value: number
-  },
-  end_location: {
-    lat: number,
-    lng: number
-  },
-  start_location: {
-    lat: number,
-    lng: number
-  },
-  html_instructions: string,
-  polyline: {
-    points: string
-  },
-  travel_mode: string,
-  maneuver: string | undefined
-}
-
-interface Corner{
-  latitude: number;
-  longitude: number;
-  check: boolean;
-}
 
 const Home: React.FC = () => {
-  const mapRef = useRef<MapView>(null);
-  const markerRef = useRef<MapMarker>(null);
   //皇居の座標
   const defaultLatitude = 35.6802117;
   const defaultLongitude = 139.7576692;
 
+  /*********
+   * Hooks *
+   *********/
+
+  const mapRef = useRef<MapView>(null);
+  const markerRef = useRef<MapMarker>(null);
+
+  //曲がり角の座標を格納する配列
+  const [corners, setCorners] = useState<Steps[]>([]);
+
+  /**
+   * やぎちゃんコメントかいて
+   * @param data
+   * @returns
+   */
+  const updateState = (data: Partial<State>) =>
+    setState((state) => ({ ...state, ...data }));
+
+  /**
+   * やぎちゃんコメントかいて
+   */
   const [state, setState] = useState<State>({
     curLoc: {
       latitude: defaultLatitude,
@@ -93,58 +68,89 @@ const Home: React.FC = () => {
     distance: 0,
     heading: 0,
   });
-  // 35.67880989290179, 139.6354711847531a
 
-  let stepsPosition: steps[] = [
-    { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false},
-    { latitude: 37.7749, longitude: -140.4194, check: false},
+  /**
+   * Test
+   */
+  let stepsPosition: Steps[] = [
+    { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false },
+    { latitude: 37.7749, longitude: -140.4194, check: false },
   ];
 
+  /**
+   * 初回の現在位置取得
+   */
+  useEffect(() => {
+    getLiveLocation();
+  }, []);
+
+  /**
+   * 4秒ごとに現在位置取得
+   */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getLiveLocation();
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  /**
+   * 接近検知
+   */
+  useEffect(() => {
+    const fetchSteps = async () => {
+      stepsPosition = await checkSteps(state, stepsPosition);
+      console.log(stepsPosition);
+    };
+    fetchSteps();
+  }, [state, stepsPosition]);
+
+  /**
+   * InputDestinationAreaコンポーネントに引き渡す
+   * 目的地の座標を設定する関数
+   * @param latitude
+   * @param longitude
+   */
   const setCoordinate = (latitude: number, longitude: number) => {
     updateState({
       destinationCords: {
         latitude,
         longitude,
-      }
+      },
     });
-  }
+  };
 
-  //曲がり角の座標を格納する配列
-  const [corners, setCorners] = useState<Corner[]>([]);
   /**
    * 経路の曲がり角 steps 要素からStart及びEndの座標を取得
    * @param steps : Steps[]
    */
-  const formingCorners = (steps: Step[]) => {
+  const formingCorners = (steps: MapDirectionsLegsStep[]) => {
     console.log(steps);
     steps.map((step) => {
-      const corner: Corner = {
+      const corner: Steps = {
         latitude: step.start_location.lat,
         longitude: step.start_location.lng,
-        check: false
-      }
+        check: false,
+      };
       setCorners([...corners, corner]);
     });
   };
 
+  /**
+   * やぎちゃんコメントかいて
+   */
   const { curLoc, time, distance, destinationCords, coordinate, heading } =
     state;
 
-  const updateState = (data: Partial<State>) =>
-    setState((state) => ({ ...state, ...data }));
-
-  useEffect(() => {
-    getLiveLocation();
-  }, []);
-
+  /**
+   * 現在位置取得
+   */
   const getLiveLocation = async () => {
     const locPermissionDenied: string = await locationPermission();
     if (locPermissionDenied === "granted") {
       try {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
-        console.log("get live location after 4 second", heading);
-        console.log("TEST %o",corners);
         animate(latitude, longitude);
         updateState({
           // heading: heading,
@@ -160,13 +166,11 @@ const Home: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      getLiveLocation();
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
+  /**
+   * やぎちゃんコメントかいて
+   * @param latitude
+   * @param longitude
+   */
   const animate = (latitude: number, longitude: number) => {
     const newCoordinate = {
       latitude,
@@ -201,24 +205,8 @@ const Home: React.FC = () => {
     });
   };
 
-  // useEffect(() => {
-  //   if (state.curLoc.latitude !== 37.7749 || state.curLoc.longitude !== -122.4194) {
-  //     checkSteps(state, stepsPosition);
-  //   }
-  // }, [state]);
-
-  useEffect(() => {
-    const fetchSteps = async () => {
-      stepsPosition = await checkSteps(state, stepsPosition);
-      console.log(stepsPosition);
-    };
-  
-    fetchSteps();
-  }, [state, stepsPosition]);
-
   return (
     <View style={styles.container}>
-
       {distance !== 0 && time !== 0 && (
         <View style={{ alignItems: "center", marginVertical: 16 }}>
           <Text>Time left: {time.toFixed(0)} </Text>
