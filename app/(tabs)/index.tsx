@@ -32,16 +32,24 @@ const Home: React.FC = () => {
   //皇居の座標
   const defaultLatitude = 35.6802117;
   const defaultLongitude = 139.7576692;
+  // 経路探索後結果を固定するためのFlag
+  const [flag, setFlag] = useState<boolean>(true);
 
-  /*********
-   * Hooks *
-   *********/
+/*
+  ====================
+        Hooks
+  ====================
+*/
 
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef<MapMarker>(null);
 
-  //曲がり角の座標を格納する配列
+  // 曲がり角の座標を格納するHooks
   const [corners, setCorners] = useState<Steps[]>([]);
+  // 経路検索結果を格納するHooks
+  const [directions, setDirections] = useState<MapDirectionsResponse | null>(
+    null
+  );
 
   /**
    * やぎちゃんコメントかいて
@@ -109,6 +117,26 @@ const Home: React.FC = () => {
   }, [state, stepsPosition]);
 
   /**
+   * 検索入力欄の文字列が変更されたときに曲がり角情報をリセット
+   */
+  useEffect(() => {
+    setCorners([]);
+    setFlag(true);
+  }, [state.destinationCords]);
+
+  /**
+   * 経路検索時に曲がり角情報をセット
+   */
+  useEffect(() => {
+    if (directions && flag) {
+      console.log(directions.legs[0].steps.length);
+      formingCorners(directions.legs[0].steps);
+      console.log(corners);
+      setFlag(false);
+    }
+  }, [directions]);
+
+  /**
    * InputDestinationAreaコンポーネントに引き渡す
    * 目的地の座標を設定する関数
    * @param latitude
@@ -128,15 +156,15 @@ const Home: React.FC = () => {
    * @param steps : Steps[]
    */
   const formingCorners = (steps: MapDirectionsLegsStep[]) => {
-    console.log(steps);
-    steps.map((step) => {
-      const corner: Steps = {
-        latitude: step.start_location.lat,
-        longitude: step.start_location.lng,
-        check: false,
-      };
-      setCorners([...corners, corner]);
-    });
+    setCorners((prevCorners) =>
+      steps
+        .map((step) => ({
+          latitude: step.start_location.lat,
+          longitude: step.start_location.lng,
+          check: false,
+        }))
+        .concat(prevCorners)
+    );
   };
 
   /**
@@ -260,13 +288,13 @@ const Home: React.FC = () => {
               strokeWidth={6}
               strokeColor="red"
               optimizeWaypoints={true}
-              onStart={(params) => {
-                console.log(
-                  `Started routing between "${params.origin}" and "${params.destination}"`
-                );
-              }}
+              // onStart={(params) => {
+              //   console.log(
+              //     `Started routing between "${params.origin}" and "${params.destination}"`
+              //   );
+              // }}
               onReady={(result) => {
-                console.log(result.legs[0].steps.length);
+                setDirections(result);
                 formingCorners(result.legs[0].steps);
                 fetchTime(result.distance, result.duration);
                 mapRef.current?.fitToCoordinates(result.coordinates, {
