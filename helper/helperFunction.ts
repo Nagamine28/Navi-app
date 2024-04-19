@@ -66,7 +66,6 @@ export const checkSteps = async (state: { curLoc: { latitude: number, longitude:
             return stepsPosition;
         }
     }
-
     return stepsPosition;
 };
 

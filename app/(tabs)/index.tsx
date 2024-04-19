@@ -11,14 +11,16 @@ import {
   KeyboardAvoidingView, //キーボード配置のためのインポート
 } from "react-native";
 import MapView, { MapMarker } from "react-native-maps";
-import MapViewDirections, { MapDirectionsResponse } from "react-native-maps-directions";
+import MapViewDirections, {
+  MapDirectionsResponse,
+} from "react-native-maps-directions";
 import {
   locationPermission,
   getCurrentLocation,
   checkSteps,
 } from "../../helper/helperFunction";
 
-import { Steps, State, MapDirectionsLegsStep, } from "../../helper/types";
+import { Steps, State, MapDirectionsLegsStep } from "../../helper/types";
 import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 
@@ -27,7 +29,6 @@ const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-
 const Home: React.FC = () => {
   //皇居の座標
   const defaultLatitude = 35.6802117;
@@ -35,7 +36,7 @@ const Home: React.FC = () => {
   // 経路探索後結果を固定するためのFlag
   const [flag, setFlag] = useState<boolean>(true);
 
-/*
+  /*
   ====================
         Hooks
   ====================
@@ -77,15 +78,15 @@ const Home: React.FC = () => {
     heading: 0,
   });
 
-  /**
-   * Test
-   */
-  let stepsPositions: Steps[] = [
-    { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false },
-    { latitude: 37.7749, longitude: -140.4194, check: false },
-  ];
+  // /**
+  //  * Test
+  //  */
+  // let stepsPositions: Steps[] = [
+  //   { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false },
+  //   { latitude: 37.7749, longitude: -140.4194, check: false },
+  // ];
 
-  const [stepsPosition, setStepsPosition] = useState<Steps[]>(stepsPositions);
+  // const [stepsPosition, setStepsPosition] = useState<Steps[]>(stepsPositions);
 
   /**
    * 初回の現在位置取得
@@ -108,13 +109,8 @@ const Home: React.FC = () => {
    * 接近検知
    */
   useEffect(() => {
-    const fetchSteps = async () => {
-      const updatedStepsPosition = await checkSteps(state, stepsPosition);
-      setStepsPosition(updatedStepsPosition);
-      console.log(updatedStepsPosition);
-    };
     fetchSteps();
-  }, [state, stepsPosition]);
+  }, [state.curLoc]);
 
   /**
    * 検索入力欄の文字列が変更されたときに曲がり角情報をリセット
@@ -129,9 +125,10 @@ const Home: React.FC = () => {
    */
   useEffect(() => {
     if (directions && flag) {
-      console.log(directions.legs[0].steps.length);
       formingCorners(directions.legs[0].steps);
+      console.log(`Corners`);
       console.log(corners);
+      console.log("end");
       setFlag(false);
     }
   }, [directions]);
@@ -149,6 +146,12 @@ const Home: React.FC = () => {
         longitude,
       },
     });
+  };
+
+  const fetchSteps = async () => {
+    const updatedStepsPosition = await checkSteps(state, corners);
+    setCorners(updatedStepsPosition);
+    console.log(corners);
   };
 
   /**
@@ -183,7 +186,6 @@ const Home: React.FC = () => {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
         animate(latitude, longitude);
-        onCenter();
         updateState({
           // heading: heading,
           curLoc: { latitude, longitude },
@@ -192,6 +194,7 @@ const Home: React.FC = () => {
             y: longitude,
           }),
         });
+        onCenter();
       } catch (error) {
         console.log("Error while getting current location: ", error);
       }
@@ -225,8 +228,8 @@ const Home: React.FC = () => {
     mapRef.current?.animateToRegion({
       latitude: state.curLoc.latitude,
       longitude: state.curLoc.longitude,
-      latitudeDelta: LATITUDE_DELTA / 8,    //現在地フォーカス時の画面の大きさ変更
-      longitudeDelta: LONGITUDE_DELTA / 8,  //現在地フォーカス時の画面の大きさ変更
+      latitudeDelta: LATITUDE_DELTA / 8, //現在地フォーカス時の画面の大きさ変更
+      longitudeDelta: LONGITUDE_DELTA / 8, //現在地フォーカス時の画面の大きさ変更
     });
   };
 
@@ -323,7 +326,7 @@ const Home: React.FC = () => {
           <Image source={imagePath.greenIndicator} />
         </TouchableOpacity>
       </View>
-      <KeyboardAvoidingView  //キーボードの配置変更
+      <KeyboardAvoidingView //キーボードの配置変更
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.bottomCard}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
