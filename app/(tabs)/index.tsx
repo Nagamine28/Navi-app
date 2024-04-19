@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Animated, View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
-import MapView, { MapMarker, AnimatedRegion } from 'react-native-maps';
+import MapView, { MapMarker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import { locationPermission, getCurrentLocation } from '../../helper/helperFunction';
-import imagePath from '../../constants/imagePath';
+import imagePath from '@/constants/imagePath';
 import InputDestinationArea from '@/components/InputDestinationArea';
 
 const screen = Dimensions.get('window');
@@ -25,7 +25,7 @@ interface State {
   heading: number;
 }
 
-const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
+const Home: React.FC = () => {
   const mapRef = useRef<MapView>(null);
   const markerRef = useRef<MapMarker>(null);
   //皇居の座標
@@ -82,10 +82,6 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-
-  const onPressLocation = async () => {
-    navigation.navigate('chooseLocation', { getCordinates: fetchValue });
-  };
 
   const fetchValue = (data: { destinationCords: Coordinate }) => {
     updateState({

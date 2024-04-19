@@ -1,21 +1,4 @@
-// import Geolocation from 'react-native-geolocation-service';
-
-// interface Coordinate {
-//   latitude: number;
-//   longitude: number;
-//   heading: number;
-// }
-
-//   return new Promise((resolve, reject) => {
-//     Geolocation.getCurrentPosition(
-//       (position) => {
-//         const cords: Coordinate = {
-//           latitude: position.coords.latitude,
-//           longitude: position.coords.longitude,
-//           heading: position.coords.heading,
-//         };
-//         resolve(cords);
-
+import { showMessage } from 'react-native-flash-message';
 import * as Location from 'expo-location';
 import { LocationObject } from 'expo-location';
 
@@ -40,3 +23,24 @@ export const getCurrentLocation = (): Promise<LocationObject> => new Promise(asy
     reject(error);
   }
 });
+
+const showError = (message: string) => {
+  showMessage({
+    message,
+    type: 'danger',
+    icon: 'danger'
+  })
+}
+
+const showSuccess = (message: string) => {
+  showMessage({
+    message,
+    type: 'success',
+    icon: 'success'
+  })
+}
+
+export {
+  showError,
+  showSuccess
+}

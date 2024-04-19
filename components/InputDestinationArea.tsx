@@ -12,7 +12,7 @@ import {
 import { Loader } from "@googlemaps/js-api-loader";
 
 export const InputDestinationArea= () => {
-  
+
   const loader = new Loader({
     apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
