@@ -1,3 +1,15 @@
+// {
+//   "extends": "expo/tsconfig.base",
+//   "compilerOptions": {
+//     "jsx": "react-jsx",
+//   },
+//   "include": [
+//     "**/*.ts",
+//     "**/*.tsx",
+//     ".expo/types/**/*.ts",
+//     "expo-env.d.ts"
+//   ]
+// }
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
@@ -6,7 +18,11 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "types": [
+      "google.maps",
+      "node"
+    ]
   },
   "include": [
     "**/*.ts",
