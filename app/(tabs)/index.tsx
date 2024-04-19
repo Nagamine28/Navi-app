@@ -8,6 +8,7 @@ import {
   Dimensions,
   Image,
   Platform,
+  KeyboardAvoidingView, //キーボード配置のためのインポート
 } from "react-native";
 import MapView, { MapMarker } from "react-native-maps";
 import MapViewDirections, { MapDirectionsResponse } from "react-native-maps-directions";
@@ -79,10 +80,12 @@ const Home: React.FC = () => {
   /**
    * Test
    */
-  let stepsPosition: Steps[] = [
+  let stepsPositions: Steps[] = [
     { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false },
     { latitude: 37.7749, longitude: -140.4194, check: false },
   ];
+
+  const [stepsPosition, setStepsPosition] = useState<Steps[]>(stepsPositions);
 
   /**
    * 初回の現在位置取得
@@ -106,7 +109,9 @@ const Home: React.FC = () => {
    */
   useEffect(() => {
     const fetchSteps = async () => {
-      stepsPosition = await checkSteps(state, stepsPosition);
+      const updatedStepsPosition = await checkSteps(state, stepsPosition);
+      setStepsPosition(updatedStepsPosition);
+      console.log(updatedStepsPosition);
     };
     fetchSteps();
   }, [state, stepsPosition]);
@@ -178,6 +183,7 @@ const Home: React.FC = () => {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
         animate(latitude, longitude);
+        onCenter();
         updateState({
           // heading: heading,
           curLoc: { latitude, longitude },
@@ -217,10 +223,10 @@ const Home: React.FC = () => {
 
   const onCenter = () => {
     mapRef.current?.animateToRegion({
-      latitude: curLoc.latitude,
-      longitude: curLoc.longitude,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA,
+      latitude: state.curLoc.latitude,
+      longitude: state.curLoc.longitude,
+      latitudeDelta: LATITUDE_DELTA / 8,    //現在地フォーカス時の画面の大きさ変更
+      longitudeDelta: LONGITUDE_DELTA / 8,  //現在地フォーカス時の画面の大きさ変更
     });
   };
 
@@ -317,9 +323,13 @@ const Home: React.FC = () => {
           <Image source={imagePath.greenIndicator} />
         </TouchableOpacity>
       </View>
-      <View style={styles.bottomCard}>
+      <KeyboardAvoidingView  //キーボードの配置変更
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.bottomCard}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+      >
         <InputDestinationArea setCoordinate={setCoordinate} />
-      </View>
+      </KeyboardAvoidingView>
     </View>
   );
 };
