@@ -14,7 +14,10 @@ import MapViewDirections, { MapDirectionsResponse } from "react-native-maps-dire
 import {
   locationPermission,
   getCurrentLocation,
+  checkSteps,
 } from "../../helper/helperFunction";
+
+import { steps } from '../../helper/types';
 import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 
@@ -89,6 +92,12 @@ const Home: React.FC = () => {
     distance: 0,
     heading: 0,
   });
+  // 35.67880989290179, 139.6354711847531a
+
+  let stepsPosition: steps[] = [
+    { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false},
+    { latitude: 37.7749, longitude: -140.4194, check: false},
+  ];
 
   const setCoordinate = (latitude: number, longitude: number) => {
     updateState({
@@ -191,8 +200,24 @@ const Home: React.FC = () => {
     });
   };
 
+  // useEffect(() => {
+  //   if (state.curLoc.latitude !== 37.7749 || state.curLoc.longitude !== -122.4194) {
+  //     checkSteps(state, stepsPosition);
+  //   }
+  // }, [state]);
+
+  useEffect(() => {
+    const fetchSteps = async () => {
+      stepsPosition = await checkSteps(state, stepsPosition);
+      console.log(stepsPosition);
+    };
+  
+    fetchSteps();
+  }, [state, stepsPosition]);
+
   return (
     <View style={styles.container}>
+
       {distance !== 0 && time !== 0 && (
         <View style={{ alignItems: "center", marginVertical: 16 }}>
           <Text>Time left: {time.toFixed(0)} </Text>
