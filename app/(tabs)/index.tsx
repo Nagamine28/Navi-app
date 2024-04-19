@@ -11,11 +11,14 @@ import {
   KeyboardAvoidingView, //キーボード配置のためのインポート
 } from "react-native";
 import MapView, { MapMarker } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
+import MapViewDirections, { MapDirectionsResponse } from "react-native-maps-directions";
 import {
   locationPermission,
   getCurrentLocation,
+  checkSteps,
 } from "../../helper/helperFunction";
+
+import { steps } from '../../helper/types';
 import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 
@@ -36,6 +39,37 @@ interface State {
   time: number;
   distance: number;
   heading: number;
+}
+
+interface Step {
+  distance: {
+    text: string,
+    value: number
+  },
+  duration: {
+    text: string,
+    value: number
+  },
+  end_location: {
+    lat: number,
+    lng: number
+  },
+  start_location: {
+    lat: number,
+    lng: number
+  },
+  html_instructions: string,
+  polyline: {
+    points: string
+  },
+  travel_mode: string,
+  maneuver: string | undefined
+}
+
+interface Corner{
+  latitude: number;
+  longitude: number;
+  check: boolean;
 }
 
 const Home: React.FC = () => {
@@ -59,6 +93,12 @@ const Home: React.FC = () => {
     distance: 0,
     heading: 0,
   });
+  // 35.67880989290179, 139.6354711847531a
+
+  let stepsPosition: steps[] = [
+    { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false},
+    { latitude: 37.7749, longitude: -140.4194, check: false},
+  ];
 
   const setCoordinate = (latitude: number, longitude: number) => {
     updateState({
@@ -68,6 +108,24 @@ const Home: React.FC = () => {
       }
     });
   }
+
+  //曲がり角の座標を格納する配列
+  const [corners, setCorners] = useState<Corner[]>([]);
+  /**
+   * 経路の曲がり角 steps 要素からStart及びEndの座標を取得
+   * @param steps : Steps[]
+   */
+  const formingCorners = (steps: Step[]) => {
+    console.log(steps);
+    steps.map((step) => {
+      const corner: Corner = {
+        latitude: step.start_location.lat,
+        longitude: step.start_location.lng,
+        check: false
+      }
+      setCorners([...corners, corner]);
+    });
+  };
 
   const { curLoc, time, distance, destinationCords, coordinate, heading } =
     state;
@@ -86,6 +144,7 @@ const Home: React.FC = () => {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
         console.log("get live location after 4 second", heading);
+        console.log("TEST %o",corners);
         animate(latitude, longitude);
         updateState({
           // heading: heading,
@@ -142,8 +201,24 @@ const Home: React.FC = () => {
     });
   };
 
+  // useEffect(() => {
+  //   if (state.curLoc.latitude !== 37.7749 || state.curLoc.longitude !== -122.4194) {
+  //     checkSteps(state, stepsPosition);
+  //   }
+  // }, [state]);
+
+  useEffect(() => {
+    const fetchSteps = async () => {
+      stepsPosition = await checkSteps(state, stepsPosition);
+      console.log(stepsPosition);
+    };
+  
+    fetchSteps();
+  }, [state, stepsPosition]);
+
   return (
     <View style={styles.container}>
+
       {distance !== 0 && time !== 0 && (
         <View style={{ alignItems: "center", marginVertical: 16 }}>
           <Text>Time left: {time.toFixed(0)} </Text>
@@ -199,8 +274,8 @@ const Home: React.FC = () => {
                 );
               }}
               onReady={(result) => {
-                console.log(`Distance: ${result.distance} km`);
-                console.log(`Duration: ${result.duration} min.`);
+                console.log(result.legs[0].steps.length);
+                formingCorners(result.legs[0].steps);
                 fetchTime(result.distance, result.duration);
                 mapRef.current?.fitToCoordinates(result.coordinates, {
                   edgePadding: {
