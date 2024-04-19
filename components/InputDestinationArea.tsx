@@ -14,9 +14,8 @@ import { Loader } from "@googlemaps/js-api-loader";
 export const InputDestinationArea= () => {
   
   const loader = new Loader({
-    apiKey: process.env.GOOGLE_MAPS_API_KEY || ''
+    apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
-  const geocoder = new google.maps.Geocoder();
 
   const searchCoordinates = async () => {
     console.log("TEst");

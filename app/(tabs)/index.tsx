@@ -133,7 +133,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {distance !== 0 && time !== 0 && (
-        <View style={{ alignItems: 'center', marginVertical: 16 }}>
+        <View style={{ alignItems: "center", marginVertical: 16 }}>
           <Text>Time left: {time.toFixed(0)} </Text>
           <Text>Distance left: {distance.toFixed(0)}</Text>
         </View>
@@ -152,8 +152,9 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
             ref={markerRef}
             coordinate={{
               latitude: coordinate.x,
-              longitude: coordinate.y
-            }}>
+              longitude: coordinate.y,
+            }}
+          >
             <Image
               source={imagePath.icBike}
               style={{
@@ -161,47 +162,52 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
                 height: 40,
                 transform: [{ rotate: `${heading}deg` }],
               }}
-              resizeMode='contain'
+              resizeMode="contain"
             />
           </MapMarker.Animated>
 
           {Object.keys(destinationCords).length > 0 && (
-            <MapMarker coordinate={destinationCords} image={imagePath.icGreenMarker} />
+            <MapMarker
+              coordinate={destinationCords}
+              image={imagePath.icGreenMarker}
+            />
           )}
 
           {Object.keys(destinationCords).length > 0 && (
             <MapViewDirections
               origin={curLoc}
               destination={destinationCords}
-              apikey={process.env.GOOGLE_MAPS_API_KEY || ''}
+              apikey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || ""}
               strokeWidth={6}
-              strokeColor='red'
+              strokeColor="red"
               optimizeWaypoints={true}
               onStart={(params) => {
-                console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
+                console.log(
+                  `Started routing between "${params.origin}" and "${params.destination}"`
+                );
               }}
               onReady={(result) => {
-                console.log(`Distance: ${result.distance} km`)
-                console.log(`Duration: ${result.duration} min.`)
-                fetchTime(result.distance, result.duration)
+                console.log(`Distance: ${result.distance} km`);
+                console.log(`Duration: ${result.duration} min.`);
+                fetchTime(result.distance, result.duration);
                 mapRef.current?.fitToCoordinates(result.coordinates, {
                   edgePadding: {
-                    right: (Dimensions.get('window').width) / 20,
-                    bottom: (Dimensions.get('window').height) / 4,
-                    left: (Dimensions.get('window').width) / 20,
-                    top: (Dimensions.get('window').height) / 8,
-                  }
-                })
+                    right: Dimensions.get("window").width / 20,
+                    bottom: Dimensions.get("window").height / 4,
+                    left: Dimensions.get("window").width / 20,
+                    top: Dimensions.get("window").height / 8,
+                  },
+                });
               }}
               onError={(errorMessage) => {
-                console.log('GOT AN ERROR', errorMessage);
+                console.log("GOT AN ERROR", errorMessage);
               }}
             />
           )}
         </MapView>
         <TouchableOpacity
           style={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 0,
             right: 0,
           }}
@@ -211,7 +217,7 @@ const Home: React.FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.bottomCard}>
-        <InputDestinationArea  />
+        <InputDestinationArea />
       </View>
     </View>
   );
