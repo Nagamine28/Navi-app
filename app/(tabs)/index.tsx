@@ -66,17 +66,6 @@ const Home: React.FC = () => {
         longitude,
       }
     });
-    // setState((state) => ({
-    //   ...state,
-    //   coordinate: new Animated.ValueXY({
-    //     x: latitude,
-    //     y: longitude,
-    //   }),
-    //   curLoc: {
-    //     latitude: latitude,
-    //     longitude: longitude,
-    //   },
-    // }));
   }
 
   const { curLoc, time, distance, destinationCords, coordinate, heading } =
@@ -117,12 +106,6 @@ const Home: React.FC = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-
-  // const fetchValue = (data: { destinationCords: Coordinate }) => {
-  //   updateState({
-  //     destinationCords: data.destinationCords,
-  //   });
-  // };
 
   const animate = (latitude: number, longitude: number) => {
     const newCoordinate = {
