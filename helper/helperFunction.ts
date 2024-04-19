@@ -2,7 +2,7 @@ import { showMessage } from 'react-native-flash-message';
 import * as Location from 'expo-location';
 import { LocationObject } from 'expo-location';
 
-import { steps } from './types';
+import { Steps } from './types';
 
 export const locationPermission = async (): Promise<string> => {
   try {
@@ -47,7 +47,7 @@ function deg2rad(deg: number) {
 
 
 export const checkSteps = async (state: { curLoc: { latitude: number, longitude: number } }, 
-    stepsPosition: steps[]): Promise<steps[]> => {
+    stepsPosition: Steps[]): Promise<Steps[]> => {
     
     const { curLoc } = state;
   
