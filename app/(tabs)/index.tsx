@@ -9,7 +9,10 @@ import { StyleSheet, Dimensions } from "react-native";
 import {
   locationPermission,
   getCurrentLocation,
+  checkSteps,
 } from "../../helper/helperFunction";
+import { steps } from '../../helper/types';
+
 
 // smooth tracking
 export default function TabOneScreen() {
@@ -19,6 +22,12 @@ export default function TabOneScreen() {
       longitude: -122.4194,
     },
   });
+  // 35.67880989290179, 139.6354711847531a
+
+  let stepsPosition: steps[] = [
+    { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false},
+    { latitude: 37.7749, longitude: -140.4194, check: false},
+  ];
 
   const [permissionStatus, setPermissionStatus] = useState<string | null>(null);
   const [altitude, setAltitude] = useState<number | null>(null);
@@ -32,9 +41,8 @@ export default function TabOneScreen() {
     if (locPermissionDenied === "granted") {
       try {
         let location = await getCurrentLocation();
-        console.log(location);
         setPermissionStatus(locPermissionDenied);
-        setAltitude(location.coords.altitude);
+        setAltitude(location.coords.latitude);
         setState({
           curLoc: {
             latitude: location.coords.latitude,
@@ -63,6 +71,21 @@ export default function TabOneScreen() {
     return () => clearInterval(intervalId);
   }, []);
 
+  // useEffect(() => {
+  //   if (state.curLoc.latitude !== 37.7749 || state.curLoc.longitude !== -122.4194) {
+  //     checkSteps(state, stepsPosition);
+  //   }
+  // }, [state]);
+
+  useEffect(() => {
+    const fetchSteps = async () => {
+      stepsPosition = await checkSteps(state, stepsPosition);
+      console.log(stepsPosition);
+    };
+  
+    fetchSteps();
+  }, [state, stepsPosition]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
@@ -73,7 +96,7 @@ export default function TabOneScreen() {
       />
 
       <Text>Location Permission Status: {permissionStatus}</Text>
-      <Text>Altitude: {altitude}</Text>
+      <Text>latitude: {altitude}</Text>
       <MapView ref={mapRef} style={styles.map}>
         <Marker coordinate={state.curLoc} />
       </MapView>
