@@ -4,6 +4,8 @@ import { LocationObject } from 'expo-location';
 
 import { Steps } from './types';
 
+const DetectionDistance = 0.01
+
 export const locationPermission = async (): Promise<string> => {
   try {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -54,7 +56,7 @@ export const checkSteps = async (state: { curLoc: { latitude: number, longitude:
     for (let step of stepsPosition) {
         if (!step.check) {
             const distance = getDistanceFromLatLonInKm(curLoc.latitude, curLoc.longitude, step.latitude, step.longitude);
-            if (distance <= 6) {
+            if (distance <= DetectionDistance) {
                 step.check = true;
                 console.log('near')
             } else {
