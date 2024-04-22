@@ -188,7 +188,10 @@ const Home: React.FC = () => {
         animate(latitude, longitude);
         updateState({
           // heading: heading,
-          curLoc: { latitude, longitude },
+          curLoc: {
+            latitude : latitude,
+            longitude : longitude,
+          },
           coordinate: new Animated.ValueXY({
             x: latitude,
             y: longitude,
