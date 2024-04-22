@@ -128,11 +128,11 @@ const Home: React.FC = () => {
    */
   useEffect(() => {
     if (directions && flag) {
+      setFlag(false);
       formingCorners(directions.legs[0].steps);
       console.log(`Corners`);
       console.log(corners);
       console.log("end");
-      setFlag(false);
     }
   }, [directions]);
 
@@ -153,6 +153,7 @@ const Home: React.FC = () => {
 
   const fetchSteps = async () => {
     const updatedStepsPosition = await checkSteps(state, corners);
+    setCorners([]);
     setCorners(updatedStepsPosition);
     console.log(corners);
   };
@@ -305,7 +306,6 @@ const Home: React.FC = () => {
               // }}
               onReady={(result) => {
                 setDirections(result);
-                formingCorners(result.legs[0].steps);
                 fetchTime(result.distance, result.duration);
                 mapRef.current?.fitToCoordinates(result.coordinates, {
                   edgePadding: {
