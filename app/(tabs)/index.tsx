@@ -101,8 +101,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       getLiveLocation();
+      onCenter();
     }, 6000);
+
     return () => clearInterval(interval);
+    
   }, []);
 
   /**
@@ -186,6 +189,7 @@ const Home: React.FC = () => {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
         animate(latitude, longitude);
+        
         updateState({
           // heading: heading,
           curLoc: {
@@ -197,7 +201,7 @@ const Home: React.FC = () => {
             y: longitude,
           }),
         });
-        onCenter();
+        // onCenter();
       } catch (error) {
         console.log("Error while getting current location: ", error);
       }
