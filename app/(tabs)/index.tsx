@@ -356,7 +356,7 @@ const Home: React.FC = () => {
         style={styles.bottomCard}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
-        <InputDestinationArea setCoordinate={setCoordinate} />
+        <InputDestinationArea setCoordinate={setCoordinate} updateCurLoc={updateCurLoc} />
       </KeyboardAvoidingView>
     </View>
   );
