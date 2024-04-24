@@ -48,10 +48,10 @@ function deg2rad(deg: number) {
   
 
 
-export const checkSteps = async (state: { curLoc: { latitude: number, longitude: number } }, 
+export const checkSteps = async (curLoc: { latitude: number, longitude: number }, 
     stepsPosition: Steps[]): Promise<Steps[]> => {
     
-    const { curLoc } = state;
+    // const { curLoc } = state;
   
     for (let step of stepsPosition) {
         if (!step.check) {

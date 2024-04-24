@@ -14,11 +14,16 @@ interface Coordinate {
   longitude: number;
 }
 
+interface Props {
+  setCoordinate: (lat: number, lng: number) => void;
+  updateCurLoc: () => void;
+}
+
 /**
  * 目的地の入力・検索を担うコンポーネント
  *
  */
-export const InputDestinationArea = (props) => {
+export const InputDestinationArea = (props : Props) => {
   const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   Geocoder.init(apiKey, { language: "ja" });
 
@@ -40,6 +45,7 @@ export const InputDestinationArea = (props) => {
           latitude: location.lat,
           longitude: location.lng,
         });
+        props.updateCurLoc();
         props.setCoordinate(location.lat, location.lng);
       })
       .catch((error) => console.warn(error));

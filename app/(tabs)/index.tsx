@@ -53,7 +53,7 @@ const Home: React.FC = () => {
   );
 
   /**
-   * やぎちゃんコメントかいて
+   * やぎちゃんコメントかいて by フロントエンド大臣!!
    * @param data
    * @returns
    */
@@ -146,7 +146,7 @@ const Home: React.FC = () => {
   };
 
   const fetchSteps = async () => {
-    const updatedStepsPosition = await checkSteps(state, corners);
+    const updatedStepsPosition = await checkSteps(state.curLoc, corners);
     setCorners([]);
     setCorners(updatedStepsPosition);
     console.log(corners);
@@ -171,7 +171,7 @@ const Home: React.FC = () => {
   /**
    * やぎちゃんコメントかいて
    */
-  const { curLoc, time, distance, destinationCords, coordinate, heading } =
+  const { time, distance, destinationCords, coordinate, heading } =
     state;
 
   /**
@@ -184,12 +184,11 @@ const Home: React.FC = () => {
         const location = await getCurrentLocation();
         const { latitude, longitude, heading } = location.coords;
         animate(latitude, longitude);
-        
         updateState({
           // heading: heading,
           curLoc: {
-            latitude : latitude,
-            longitude : longitude,
+            latitude: latitude,
+            longitude: longitude
           },
           coordinate: new Animated.ValueXY({
             x: latitude,
@@ -242,6 +241,25 @@ const Home: React.FC = () => {
     });
   };
 
+  const [curLoc, setCurLoc] = useState({
+    latitude: defaultLatitude,
+    longitude: defaultLongitude
+  })
+
+  const updateCurLoc = async () => {
+    try {
+      const location = await getCurrentLocation();
+      const { latitude, longitude, heading } = location.coords;
+      animate(latitude, longitude);
+      setCurLoc({
+        latitude: latitude,
+        longitude: longitude
+      })
+    } catch (error) {
+      console.log("Error while getting current location: ", error);
+    }
+  }
+
   return (
     <View style={styles.container}>
       {distance !== 0 && time !== 0 && (
@@ -255,7 +273,7 @@ const Home: React.FC = () => {
           ref={mapRef}
           style={StyleSheet.absoluteFill}
           initialRegion={{
-            ...curLoc,
+            ...state.curLoc,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
@@ -332,7 +350,7 @@ const Home: React.FC = () => {
         style={styles.bottomCard}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
-        <InputDestinationArea setCoordinate={setCoordinate} />
+        <InputDestinationArea setCoordinate={setCoordinate} updateCurLoc={updateCurLoc} />
       </KeyboardAvoidingView>
     </View>
   );
