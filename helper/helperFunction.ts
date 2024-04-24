@@ -21,7 +21,6 @@ export const locationPermission = async (): Promise<string> => {
 export const getCurrentLocation = (): Promise<LocationObject> => new Promise(async (resolve, reject) => {
     try {
         let location: LocationObject = await Location.getCurrentPositionAsync({});
-        // console.log(JSON.stringify(location));
         resolve(location);
     } catch (error) {
         reject(error);
@@ -58,13 +57,7 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
             const distance = getDistanceFromLatLonInKm(curLoc.latitude, curLoc.longitude, step.latitude, step.longitude);
             if (distance <= DetectionDistance) {
                 step.check = true;
-                console.log('near')
-            } else {
-                console.log('too far')
             }
-            console.log('現在地点 : ', curLoc.latitude, ', ', curLoc.longitude)
-            console.log('比較座標 : ', step.latitude, ', ', step.longitude)
-            // console.log('距離 : ', distance)
             return stepsPosition;
         }
     }

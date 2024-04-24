@@ -91,6 +91,9 @@ const Home: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       getLiveLocation();
+      // Responseの中身確認
+      // console.log(JSON.stringify(directions, null, 2));
+      // console.log("Location UPDATING");
     }, 6000);
 
     return () => clearInterval(interval);
@@ -98,8 +101,8 @@ const Home: React.FC = () => {
   }, []);
   
   useEffect(() => {
-    console.log(state.curLoc);
     onCenter();
+
   }, [state.curLoc]);
 
   /**
@@ -124,9 +127,6 @@ const Home: React.FC = () => {
     if (directions && flag) {
       setFlag(false);
       formingCorners(directions.legs[0].steps);
-      console.log(`Corners`);
-      console.log(corners);
-      console.log("end");
     }
   }, [directions]);
 
@@ -149,7 +149,6 @@ const Home: React.FC = () => {
     const updatedStepsPosition = await checkSteps(state.curLoc, corners);
     setCorners([]);
     setCorners(updatedStepsPosition);
-    console.log(corners);
   };
 
   /**
@@ -185,7 +184,6 @@ const Home: React.FC = () => {
         const { latitude, longitude, heading } = location.coords;
         animate(latitude, longitude);
         updateState({
-          // heading: heading,
           curLoc: {
             latitude: latitude,
             longitude: longitude
@@ -195,7 +193,6 @@ const Home: React.FC = () => {
             y: longitude,
           }),
         });
-        // onCenter();
       } catch (error) {
         console.log("Error while getting current location: ", error);
       }
@@ -216,7 +213,6 @@ const Home: React.FC = () => {
       if (markerRef.current) {
         markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000);
       } else {
-        // coordinate.timing(newCoordinate).start();
         Animated.timing(coordinate, {
           toValue: { x: newCoordinate.latitude, y: newCoordinate.longitude },
           useNativeDriver: false,
@@ -311,11 +307,8 @@ const Home: React.FC = () => {
               strokeWidth={6}
               strokeColor="red"
               optimizeWaypoints={true}
-              // onStart={(params) => {
-              //   console.log(
-              //     `Started routing between "${params.origin}" and "${params.destination}"`
-              //   );
-              // }}
+              mode="WALKING"
+              precision="high"
               onReady={(result) => {
                 setDirections(result);
                 fetchTime(result.distance, result.duration);
@@ -350,7 +343,10 @@ const Home: React.FC = () => {
         style={styles.bottomCard}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
-        <InputDestinationArea setCoordinate={setCoordinate} updateCurLoc={updateCurLoc} />
+        <InputDestinationArea
+          setCoordinate={setCoordinate}
+          updateCurLoc={updateCurLoc}
+        />
       </KeyboardAvoidingView>
     </View>
   );
