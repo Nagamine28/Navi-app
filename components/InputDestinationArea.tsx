@@ -40,6 +40,7 @@ export const InputDestinationArea = (props) => {
           latitude: location.lat,
           longitude: location.lng,
         });
+        props.updateCurLoc();
         props.setCoordinate(location.lat, location.lng);
       })
       .catch((error) => console.warn(error));
