@@ -78,16 +78,6 @@ const Home: React.FC = () => {
     heading: 0,
   });
 
-  // /**
-  //  * Test
-  //  */
-  // let stepsPositions: Steps[] = [
-  //   { latitude: 35.67880989290179, longitude: 139.6354711847531, check: false },
-  //   { latitude: 37.7749, longitude: -140.4194, check: false },
-  // ];
-
-  // const [stepsPosition, setStepsPosition] = useState<Steps[]>(stepsPositions);
-
   /**
    * 初回の現在位置取得
    */
@@ -96,17 +86,21 @@ const Home: React.FC = () => {
   }, []);
 
   /**
-   * 4秒ごとに現在位置取得
+   * 6秒ごとに現在位置取得
    */
   useEffect(() => {
     const interval = setInterval(() => {
       getLiveLocation();
-      onCenter();
     }, 6000);
 
     return () => clearInterval(interval);
     
   }, []);
+  
+  useEffect(() => {
+    console.log(state.curLoc);
+    onCenter();
+  }, [state.curLoc]);
 
   /**
    * 接近検知
