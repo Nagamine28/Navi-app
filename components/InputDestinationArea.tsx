@@ -27,11 +27,13 @@ export const InputDestinationArea = (props : Props) => {
   const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   Geocoder.init(apiKey, { language: "ja" });
 
-  const [SearchAddress, onChangeSearchAddress] = React.useState("Input Here");
+  const [SearchAddress, onChangeSearchAddress] = React.useState("");
   const [destinationCords, setDestinationCords] = useState<Coordinate>({
     latitude: 0,
     longitude: 0,
+    
   });
+
 
   /**
    * 緯度経度の検索
@@ -57,9 +59,11 @@ export const InputDestinationArea = (props : Props) => {
         style={styles.input}
         onChangeText={onChangeSearchAddress}
         value={SearchAddress}
+        placeholder="目的地を入力してください"  // ヒントテキストの設定
+        placeholderTextColor="lightgray"  // ヒントテキストの色の設定
       />
-      <TouchableOpacity onPress={searchCoordinates} style={styles.inputStyle}>
-        <Text>Search！</Text>
+      <TouchableOpacity onPress={searchCoordinates} style={[styles.inputStyle, styles.searchButton]}>
+        <Text style={styles.InputTxt}>検索</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
@@ -84,6 +88,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 16,
   },
+  searchButton: {
+    textShadowColor: "white",
+    backgroundColor: "#6C9BD2", // 青色に設定
+    height: 40, // ボタンの高さを設定
+    marginTop: 0, // 上部マージンをリセット
+  },
+  InputTxt:{
+    color:"white",
+    fontSize: 20,
+  }
+
 });
 
 export default InputDestinationArea;
