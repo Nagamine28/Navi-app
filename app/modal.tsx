@@ -8,14 +8,16 @@ import React from "react";
 export default function ModalScreen() {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
+  const background = require("../assets/videos/test.mp4");
   return (
     <View style={styles.container}>
       <Video
         ref={video}
         style={styles.video}
-        source={{
-          uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
-        }}
+        // FIXME：ここに動画のURLを入れる
+        source={
+          background
+        }
         useNativeControls
         resizeMode={ResizeMode.CONTAIN}
         isLooping
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
   video: {
     alignSelf: "center",
     width: 320,
-    height: 200,
+    height: 500,
   },
   buttons: {
     flexDirection: "row",
