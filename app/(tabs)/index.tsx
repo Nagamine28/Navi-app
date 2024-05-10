@@ -19,15 +19,20 @@ import {
   getCurrentLocation,
   checkSteps,
 } from "../../helper/helperFunction";
+import * as SplashScreen from "expo-splash-screen";
 
 import { Steps, State, MapDirectionsLegsStep } from "../../helper/types";
 import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 
+SplashScreen.preventAutoHideAsync();
+
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+
 
 const Home: React.FC = () => {
   //皇居の座標
@@ -83,6 +88,7 @@ const Home: React.FC = () => {
    */
   useEffect(() => {
     getLiveLocation();
+    
   }, []);
 
   /**
@@ -91,18 +97,12 @@ const Home: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       getLiveLocation();
-      // Responseの中身確認
-      // console.log(JSON.stringify(directions, null, 2));
-      // console.log("Location UPDATING");
     }, 6000);
-
     return () => clearInterval(interval);
-    
   }, []);
   
   useEffect(() => {
     onCenter();
-
   }, [state.curLoc]);
 
   /**
@@ -193,6 +193,7 @@ const Home: React.FC = () => {
             y: longitude,
           }),
         });
+        SplashScreen.hideAsync();
       } catch (error) {
         console.log("Error while getting current location: ", error);
       }
