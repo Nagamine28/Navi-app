@@ -22,8 +22,8 @@
 - expo-cliをインストール`npm install -g expo-cli`
 
 ### Google MAPs APIの取得
-1.googleアカウントを作成する<https://accounts.google.com/signup/v2/webcreateaccount?hl=ja&flowName=GlifWebSignIn&flowEntry=SignUp&nogm=true>  
-2.Google Cloud Platform アクセス<https://cloud.google.com/>  
+1.[Googleアカウントを作成する。](https://accounts.google.com/signup/v2/webcreateaccount?hl=ja&flowName=GlifWebSignIn&flowEntry=SignUp&nogm=true)  
+2.Google Cloud Platformへ[アクセスする。](https://cloud.google.com/)  
 3.プロジェクトを作成し、作成したプロジェクトを開く  
 4.APIとサービスのライブラリを開く  
 5.Directions APIとGeocoding APIを有効にする。  
@@ -37,6 +37,7 @@ Expoの立ち上げコマンドをターミナルに打ちQRコードをスマ�
 ## 使用技術
 - React Naitive
 - TypeScript
+- 
 
 ## アプリ内動作
 ### 検索
