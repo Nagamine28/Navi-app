@@ -53,7 +53,7 @@ const Home: React.FC = () => {
   );
 
   /**
-   * やぎちゃんコメントかいて by フロントエンド大臣!!
+   * Stateを更新する関数
    * @param data
    * @returns
    */
@@ -61,7 +61,7 @@ const Home: React.FC = () => {
     setState((state) => ({ ...state, ...data }));
 
   /**
-   * やぎちゃんコメントかいて
+   * 現在地と目的地の座標を格納するHooks
    */
   const [state, setState] = useState<State>({
     curLoc: {
@@ -79,8 +79,13 @@ const Home: React.FC = () => {
   });
 
   /**
-   * 初回の現在位置取得
+   * Stateから必要な情報を取得
    */
+  const { time, distance, destinationCords, coordinate, heading } = state;
+
+  /**
+   * 初回の現在位置取得
+  */
   useEffect(() => {
     getLiveLocation();
   }, []);
@@ -97,12 +102,10 @@ const Home: React.FC = () => {
     }, 6000);
 
     return () => clearInterval(interval);
-    
   }, []);
-  
+
   useEffect(() => {
     onCenter();
-
   }, [state.curLoc]);
 
   /**
@@ -168,12 +171,6 @@ const Home: React.FC = () => {
   };
 
   /**
-   * やぎちゃんコメントかいて
-   */
-  const { time, distance, destinationCords, coordinate, heading } =
-    state;
-
-  /**
    * 現在位置取得
    */
   const getLiveLocation = async () => {
@@ -200,7 +197,7 @@ const Home: React.FC = () => {
   };
 
   /**
-   * やぎちゃんコメントかいて
+   * マーカーのアニメーション
    * @param latitude
    * @param longitude
    */
@@ -237,24 +234,13 @@ const Home: React.FC = () => {
     });
   };
 
+  /**
+   * 経路探索時に使用する現在地情報
+   */
   const [curLoc, setCurLoc] = useState({
     latitude: defaultLatitude,
     longitude: defaultLongitude
   })
-
-  const updateCurLoc = async () => {
-    try {
-      const location = await getCurrentLocation();
-      const { latitude, longitude, heading } = location.coords;
-      animate(latitude, longitude);
-      setCurLoc({
-        latitude: latitude,
-        longitude: longitude
-      })
-    } catch (error) {
-      console.log("Error while getting current location: ", error);
-    }
-  }
 
   return (
     <View style={styles.container}>
@@ -345,7 +331,8 @@ const Home: React.FC = () => {
       >
         <InputDestinationArea
           setCoordinate={setCoordinate}
-          updateCurLoc={updateCurLoc}
+          curLoc={state.curLoc}
+          setCurLoc={setCurLoc}
         />
       </KeyboardAvoidingView>
     </View>
