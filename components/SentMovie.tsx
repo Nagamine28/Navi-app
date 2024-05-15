@@ -1,16 +1,37 @@
 import { Text } from "@/components/Themed";
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-
+import { StyleSheet, TouchableOpacity, Image } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
 
 export default function SentMovie() {
+	const [image, setImage] = useState(null);
+
+	const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
   return (
     <>
       <Text>動画はありません</Text>
       <Text>今なら動画を提供してくれれば有料プランが使えるよ</Text>
-      <TouchableOpacity style={[styles.inputStyle, styles.searchButton]}>
+      <TouchableOpacity
+        style={[styles.inputStyle, styles.searchButton]}
+        onPress={pickImage}
+      >
         <Text style={{ color: "white" }}>動画を送信する</Text>
       </TouchableOpacity>
+      {image && <Image source={{ uri: image }} style={styles.image} />}
     </>
   );
 }
@@ -39,6 +60,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+  },
+  image: {
+		width: 200,
+		height: 200,
+		borderRadius: 100,
+		marginTop: 10,
   },
   inputStyle: {
     backgroundColor: "white",
