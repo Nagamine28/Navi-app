@@ -6,6 +6,7 @@ import { Pressable, View } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { getBackgroundColorAsync } from 'expo-system-ui';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -25,12 +26,13 @@ export default function TabLayout() {
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
           // Disable the static render of the header on web
           // to prevent a hydration error in React Navigation v6.
-          headerShown: useClientOnlyValue(false, true), //ヘッダーの白い所消した
+          headerShown: useClientOnlyValue(false, false), //ヘッダーの白い所消した
         }}>
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Tab One',
+            tabBarShowLabel:false,
+            title: '地図',
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
             headerRight: () => (
               <Link href="/modal" asChild>
@@ -47,15 +49,9 @@ export default function TabLayout() {
               </Link>
             ),
             headerTitleStyle: { color: 'transparent' }, // タイトルの透明化
-            headerStyle: { backgroundColor: 'transparent' }, // ヘッダーの背景色を透明化
-            headerRightContainerStyle: { marginRight: 15 }, // 右側の余白を調整
-          }}
-        />
-        <Tabs.Screen
-          name="two"
-          options={{
-            title: 'Tab Two',
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+            headerPressColor: 'transparent', 
+            tabBarStyle:{height:0.1},
+            //FIXME: 無理やり消しただけ
           }}
         />
       </Tabs>

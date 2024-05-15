@@ -9,11 +9,17 @@ import {
   Image,
   Platform,
   KeyboardAvoidingView, //キーボード配置のためのインポート
+  Pressable,//モーダル用
 } from "react-native";
+import { Link, Tabs } from 'expo-router';//モーダル用
 import MapView, { MapMarker } from "react-native-maps";
 import MapViewDirections, {
   MapDirectionsResponse,
 } from "react-native-maps-directions";
+import Colors from '@/constants/Colors';
+import{
+  useColorScheme,
+} from '@/components/useColorScheme';
 import {
   locationPermission,
   getCurrentLocation,
@@ -23,6 +29,8 @@ import {
 import { Steps, State, MapDirectionsLegsStep } from "../../helper/types";
 import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
+import { FontAwesome } from "@expo/vector-icons";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
@@ -255,6 +263,7 @@ const Home: React.FC = () => {
       console.log("Error while getting current location: ", error);
     }
   }
+  const colorScheme = useColorScheme(); //モーダル用
 
   return (
     <View style={styles.container}>
@@ -337,6 +346,23 @@ const Home: React.FC = () => {
         >
           <Image source={imagePath.greenIndicator} />
         </TouchableOpacity>
+        {/**モーダル用 */}
+       <TouchableOpacity
+          style = {{
+            position : "absolute",
+            bottom : 25,
+            left : 10,
+            backgroundColor : "white",
+          }}>
+          <Link href="/modal" style={styles.modal} asChild>
+            <Pressable>
+              {({ pressed }) => (
+                <MaterialIcons name="play-circle" size={35} color="black" />
+              )}
+            </Pressable>
+          </Link>
+        </TouchableOpacity>
+
       </View>
       <KeyboardAvoidingView //キーボードの配置変更
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -372,6 +398,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 16,
   },
+  modal:{
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  }
 });
 
 export default Home;
