@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView, //キーボード配置のためのインポート
   Pressable,//モーダル用
 } from "react-native";
+import { Magnetometer } from 'expo-sensors';
 import { Link, Tabs } from 'expo-router';//モーダル用
 import MapView, { MapMarker } from "react-native-maps";
 import MapViewDirections, {
@@ -178,8 +179,44 @@ const Home: React.FC = () => {
   /**
    * やぎちゃんコメントかいて
    */
-  const { time, distance, destinationCords, coordinate, heading } =
+  const { time, distance, destinationCords, coordinate,} =
     state;
+
+  const [heading, setHeading] = useState(0);
+
+  useEffect(() => {
+    console.log("Heading:", heading);
+    let magnetometerSubscription: any;
+    const subscribeToMagnetometer = async () => {
+      try {
+        await Magnetometer.setUpdateInterval(1000);
+        magnetometerSubscription = Magnetometer.addListener((data) => {
+          const { x, y, z } = data;
+          const newHeading = calculateHeading(x, y);
+          setHeading(newHeading);
+        });
+      } catch (error) {
+        console.log("Error subscribing to magnetometer:", error);
+      }
+    };
+  
+    subscribeToMagnetometer();
+  
+    return () => {
+      if (magnetometerSubscription) {
+        magnetometerSubscription.remove();
+      }
+    };
+  }, [heading]);
+  
+
+const calculateHeading = (x: number, y: number) => {
+  let angle = Math.atan2(y, x) * (180 / Math.PI);
+  if (angle < 0) {
+    angle = 360 + angle;
+  }
+  return Math.round(angle);
+};
 
   /**
    * 現在位置取得
@@ -189,7 +226,7 @@ const Home: React.FC = () => {
     if (locPermissionDenied === "granted") {
       try {
         const location = await getCurrentLocation();
-        const { latitude, longitude, heading } = location.coords;
+        const { latitude, longitude, } = location.coords;
         animate(latitude, longitude);
         updateState({
           curLoc: {
@@ -253,7 +290,7 @@ const Home: React.FC = () => {
   const updateCurLoc = async () => {
     try {
       const location = await getCurrentLocation();
-      const { latitude, longitude, heading } = location.coords;
+      const { latitude, longitude, } = location.coords;
       animate(latitude, longitude);
       setCurLoc({
         latitude: latitude,
@@ -289,13 +326,14 @@ const Home: React.FC = () => {
               latitude: coordinate.x,
               longitude: coordinate.y,
             }}
+            // rotation={180}
           >
             <Image
-              source={imagePath.icBike}
+              source={imagePath.icLocation}
               style={{
-                width: 40,
-                height: 40,
-                transform: [{ rotate: `${heading}deg` }],
+                width: 30,
+                height: 30,
+                transform:[{rotate:`${heading}deg`}],
               }}
               resizeMode="contain"
             />
