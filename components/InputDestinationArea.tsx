@@ -80,19 +80,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   inputStyle: {
-    backgroundColor: "white",
+    backgroundColor: "black",
     borderRadius: 4,
     borderWidth: 1,
     alignItems: "center",
     height: 25,
     justifyContent: "center",
-    marginTop: 16,
+    marginTop: 0,
   },
   searchButton: {
-    textShadowColor: "white",
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
     backgroundColor: "#6C9BD2", // 青色に設定
+    borderRadius: 20, // 角を丸める
     height: 40, // ボタンの高さを設定
-    marginTop: 0, // 上部マージンをリセット
+    width: '100%',
+    marginTop: 5, // 上部マージンをリセット
   },
   InputTxt:{
     color:"white",

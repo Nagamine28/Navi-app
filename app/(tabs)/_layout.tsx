@@ -34,22 +34,6 @@ export default function TabLayout() {
             tabBarShowLabel:false,
             title: '地図',
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-            headerRight: () => (
-              <Link href="/modal" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <FontAwesome
-                      name="info-circle"
-                      size={25}
-                      color={Colors[colorScheme ?? 'light'].text}
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
-              </Link>
-            ),
-            headerTitleStyle: { color: 'transparent' }, // タイトルの透明化
-            headerPressColor: 'transparent', 
             tabBarStyle:{height:0.1},
             //FIXME: 無理やり消しただけ
           }}

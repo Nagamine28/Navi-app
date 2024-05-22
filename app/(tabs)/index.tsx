@@ -185,7 +185,7 @@ const Home: React.FC = () => {
   const [heading, setHeading] = useState(0);
 
   useEffect(() => {
-    console.log("Heading:", heading);
+    // console.log("Heading:", heading);
     let magnetometerSubscription: any;
     const subscribeToMagnetometer = async () => {
       try {
@@ -304,6 +304,7 @@ const calculateHeading = (x: number, y: number) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.overlay} />
       {distance !== 0 && time !== 0 && (
         <View style={{ alignItems: "center", marginVertical: 16 }}>
           <Text>Time left: {time.toFixed(0)} </Text>
@@ -420,12 +421,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '5%', // 画面の上部を覆う
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // 半透明の白
+    zIndex: 1, // 他のビューより前面に表示
+  },
   bottomCard: {
     backgroundColor: "white",
     width: "100%",
+    height: '10%',
     padding: 30,
-    borderTopEndRadius: 24,
-    borderTopStartRadius: 24,
+
   },
   inputStyle: {
     backgroundColor: "white",
