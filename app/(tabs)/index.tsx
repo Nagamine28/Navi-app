@@ -321,7 +321,7 @@ const calculateHeading = (x: number, y: number) => {
   const handleMapPress = (event: any) => {
     const { coordinate } = event.nativeEvent;
     setCustomMarker(coordinate);
-    console.log('Pinned coordinate:', coordinate);
+    // console.log('Pinned coordinate:', coordinate);
     setShowGoButton(true);
   };
   // 「ここへ行く」ボタンをタップした時の処理
