@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import Geocoder from "react-native-geocoding";
 
@@ -40,6 +42,9 @@ export const InputDestinationArea = (props : Props) => {
    *
    */
   const searchCoordinates = async () => {
+    if (SearchAddress.trim() === ""){ //入力が空白の場合何もしない
+      return;
+    }
     await Geocoder.from(SearchAddress)
       .then((json) => {
         var location = json.results[0].geometry.location;
@@ -61,6 +66,7 @@ export const InputDestinationArea = (props : Props) => {
         value={SearchAddress}
         placeholder="目的地を入力してください"  // ヒントテキストの設定
         placeholderTextColor="lightgray"  // ヒントテキストの色の設定
+        onSubmitEditing={searchCoordinates} //Enterキー押下時に検索を実行
       />
       <TouchableOpacity onPress={searchCoordinates} style={[styles.inputStyle, styles.searchButton]}>
         <Text style={styles.InputTxt}>検索</Text>
