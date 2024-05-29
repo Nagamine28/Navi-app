@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import Geocoder from "react-native-geocoding";
 
@@ -35,8 +37,9 @@ export const InputDestinationArea = (props : Props) => {
    *
    */
   const searchCoordinates = async () => {
-    const curLoc = props.curLoc
-    props.setCurLoc(curLoc)
+    if (SearchAddress.trim() === ""){ //入力が空白の場合何もしない
+      return;
+    }
     await Geocoder.from(SearchAddress)
     .then((json) => {
       var location = json.results[0].geometry.location;
@@ -53,6 +56,7 @@ export const InputDestinationArea = (props : Props) => {
         value={SearchAddress}
         placeholder="目的地を入力してください"  // ヒントテキストの設定
         placeholderTextColor="lightgray"  // ヒントテキストの色の設定
+        onSubmitEditing={searchCoordinates} //Enterキー押下時に検索を実行
       />
       <TouchableOpacity onPress={searchCoordinates} style={[styles.inputStyle, styles.searchButton]}>
         <Text style={styles.InputTxt}>検索</Text>
@@ -72,19 +76,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   inputStyle: {
-    backgroundColor: "white",
+    backgroundColor: "black",
     borderRadius: 4,
     borderWidth: 1,
     alignItems: "center",
     height: 25,
     justifyContent: "center",
-    marginTop: 16,
+    marginTop: 0,
   },
   searchButton: {
-    textShadowColor: "white",
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
     backgroundColor: "#6C9BD2", // 青色に設定
+    borderRadius: 20, // 角を丸める
     height: 40, // ボタンの高さを設定
-    marginTop: 0, // 上部マージンをリセット
+    width: '100%',
+    marginTop: 5, // 上部マージンをリセット
   },
   InputTxt:{
     color:"white",
