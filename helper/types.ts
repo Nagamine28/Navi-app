@@ -12,6 +12,7 @@ export interface Coordinate {
 }
 
 export interface State {
+  customMarker: any;
   curLoc: Coordinate;
   destinationCords: Coordinate;
   coordinate: Animated.ValueXY;
