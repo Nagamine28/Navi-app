@@ -28,6 +28,7 @@ import {
   getCurrentLocation,
   checkSteps,
 } from "../../helper/helperFunction";
+import * as SplashScreen from "expo-splash-screen";
 
 import { Steps, State, MapDirectionsLegsStep } from "../../helper/types";
 import imagePath from "../../constants/imagePath";
@@ -35,10 +36,14 @@ import InputDestinationArea from "@/components/InputDestinationArea";
 import { FontAwesome } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+SplashScreen.preventAutoHideAsync();
+
 const screen = Dimensions.get("window");
 const ASPECT_RATIO = screen.width / screen.height;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+
 
 const Home: React.FC = () => {
   //皇居の座標
@@ -65,7 +70,7 @@ const Home: React.FC = () => {
   );
 
   /**
-   * やぎちゃんコメントかいて by フロントエンド大臣!!
+   * Stateを更新する関数
    * @param data
    * @returns
    */
@@ -73,7 +78,7 @@ const Home: React.FC = () => {
     setState((state) => ({ ...state, ...data }));
 
   /**
-   * やぎちゃんコメントかいて
+   * 現在地と目的地の座標を格納するHooks
    */
   const [state, setState] = useState<State>({
     curLoc: {
@@ -91,10 +96,16 @@ const Home: React.FC = () => {
   });
 
   /**
-   * 初回の現在位置取得
+   * Stateから必要な情報を取得
    */
+  const { time, distance, destinationCords, coordinate } = state;
+
+  /**
+   * 初回の現在位置取得
+  */
   useEffect(() => {
     getLiveLocation();
+    
   }, []);
 
   /**
@@ -103,13 +114,8 @@ const Home: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       getLiveLocation();
-      // Responseの中身確認
-      // console.log(JSON.stringify(directions, null, 2));
-      // console.log("Location UPDATING");
     }, 6000);
-
     return () => clearInterval(interval);
-    
   }, []);
 
   useEffect(() => {
@@ -182,11 +188,6 @@ const Home: React.FC = () => {
     );
   };
 
-  /**
-   * やぎちゃんコメントかいて
-   */
-  const { time, distance, destinationCords, coordinate,} =
-    state;
 
   const [heading, setHeading] = useState(0);
 
@@ -244,6 +245,7 @@ const calculateHeading = (x: number, y: number) => {
             y: longitude,
           }),
         });
+        SplashScreen.hideAsync();
       } catch (error) {
         console.log("Error while getting current location: ", error);
       }
@@ -251,7 +253,7 @@ const calculateHeading = (x: number, y: number) => {
   };
 
   /**
-   * やぎちゃんコメントかいて
+   * マーカーのアニメーション
    * @param latitude
    * @param longitude
    */
@@ -288,6 +290,9 @@ const calculateHeading = (x: number, y: number) => {
     });
   };
 
+  /**
+   * 経路探索時に使用する現在地情報
+   */
   const [curLoc, setCurLoc] = useState({
     latitude: 0,
     longitude: 0
