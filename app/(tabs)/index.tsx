@@ -70,7 +70,7 @@ const Home: React.FC = () => {
   );
 
   /**
-   * Stateを更新する関数
+   * Stateの更新
    * @param data
    * @returns
    */
@@ -78,7 +78,7 @@ const Home: React.FC = () => {
     setState((state) => ({ ...state, ...data }));
 
   /**
-   * 現在地と目的地の座標を格納するHooks
+   * 現在地と目的地を管理するStateの初期化
    */
   const [state, setState] = useState<State>({
     curLoc: {
