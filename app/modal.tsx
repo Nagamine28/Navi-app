@@ -1,39 +1,37 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, Platform, StyleSheet } from "react-native";
+import { Button, Platform, StyleSheet, TouchableOpacity } from "react-native";
 import { Video, ResizeMode } from "expo-av";
-import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import React from "react";
+import SentMovie from "@/components/SentMovie";
 
 export default function ModalScreen() {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
-  const background = require("../assets/videos/test.mp4");
+  const [isMovie, setIsMovie] = React.useState(false);
+  // Test
+  // const background = require("../assets/videos/test.mp4");
   return (
     <View style={styles.container}>
-      <Video
-        ref={video}
-        style={styles.video}
-        // FIXME：ここに動画のURLを入れる
-        source={
-          background
-        }
-        useNativeControls
-        resizeMode={ResizeMode.CONTAIN}
-        isLooping
-        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-      />
-      <View style={styles.buttons}>
-        <Button
-          title={status.isPlaying ? "Pause" : "Play"}
-          onPress={() =>
-            status.isPlaying
-              ? video.current.pauseAsync()
-              : video.current.playAsync()
-          }
+      {isMovie ? (
+        <Video
+          ref={video}
+          style={styles.video}
+          // Test
+          // source={background}
+          source={{
+            uri: "http://18.176.53.200/big_buck_bunny.mp4",
+          }}
+          useNativeControls
+          resizeMode={ResizeMode.CONTAIN}
+          isLooping
+          onPlaybackStatusUpdate={(status) => setStatus(() => status)}
         />
-      </View>
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      ) : (
+        <>
+          <SentMovie/>
+        </>
+      )}
     </View>
   );
 }
@@ -63,4 +61,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  inputStyle: {
+    backgroundColor: "white",
+    borderRadius: 4,
+    borderWidth: 1,
+    alignItems: "center",
+    height: 25,
+    justifyContent: "center",
+    marginTop: 16,
+  },
+  searchButton: {
+    textShadowColor: "white",
+    backgroundColor: "#6C9BD2", // 青色に設定
+    height: 40, // ボタンの高さを設定
+    marginTop: 10, // 上部マージンをリセット
+  },
+  textColor: {
+    color: "white",
+  }
 });
