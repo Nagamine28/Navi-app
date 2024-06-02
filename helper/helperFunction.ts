@@ -72,10 +72,10 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
   return stepsPosition;
 };
 
-const getVideoUrl = async (params: { previousStep: Steps, currentStep: Steps, nextStep: Steps }) => {
+export const getVideoUrl = async (params: { previousStep: Steps, currentStep: Steps, nextStep: Steps }) : Promise<String | undefined> => {
   try {
     console.log("params:", params);
-    const response = await fetch('https://ecdd-125-103-213-138.ngrok-free.app/api/video', {
+    const response = await fetch('https://0c15-42-148-193-222.ngrok-free.app/api/video', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

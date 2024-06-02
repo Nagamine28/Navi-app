@@ -27,6 +27,7 @@ import {
   locationPermission,
   getCurrentLocation,
   checkSteps,
+  getVideoUrl,
 } from "../../helper/helperFunction";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -364,6 +365,30 @@ const calculateHeading = (x: number, y: number) => {
     fetchInitialLocation();
   }, []);
 
+  //test
+  interface test {
+    "currentStep": Steps,
+    "previousStep": Steps,
+    "nextStep": Steps,
+  }
+  const testVal:test= {
+    "currentStep": {
+        "latitude": 35.69295690000001,
+        "longitude": 139.6968302,
+        "check": true
+    },
+    "previousStep": {
+        "latitude": 35.6917081,
+        "longitude": 139.6966017,
+        "check": true
+    },
+    "nextStep": {
+        "latitude": 35.6930854,
+        "longitude": 139.6967737,
+        "check": true
+    }
+}
+
   return (
     <TouchableWithoutFeedback  onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -469,7 +494,12 @@ const calculateHeading = (x: number, y: number) => {
               left : 10,
               backgroundColor : "white",
             }}>
-            <Link href="/modal" style={styles.modal} asChild>
+            <Link href={{
+              pathname: "/modal",
+              params: {
+                movieUrl: {...getVideoUrl(testVal)},
+              }
+            }} style={styles.modal} asChild>
               <Pressable>
                 {({ pressed }) => (
                   <MaterialIcons name="play-circle" size={35} color="black" />
