@@ -36,6 +36,8 @@ import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 import { FontAwesome } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import useNotification from "@/components/useNotification";
+import { scheduleNotificationAsync } from '@/components/useNotification';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,6 +56,9 @@ const Home: React.FC = () => {
   const [flag, setFlag] = useState<boolean>(true);
   const [initialFocusDone, setInitialFocusDone] = useState<boolean>(false);
 
+  // 通知権限の認可
+  useNotification();
+
   /*
   ====================
         Hooks
@@ -71,7 +76,7 @@ const Home: React.FC = () => {
   );
 
   /**
-   * Stateを更新する関数
+   * Stateの更新
    * @param data
    * @returns
    */
@@ -79,7 +84,7 @@ const Home: React.FC = () => {
     setState((state) => ({ ...state, ...data }));
 
   /**
-   * 現在地と目的地の座標を格納するHooks
+   * 現在地と目的地を管理するStateの初期化
    */
   const [state, setState] = useState<State>({
     curLoc: {
