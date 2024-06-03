@@ -11,11 +11,12 @@ import {
   KeyboardAvoidingView, //キーボード配置のためのインポート
   Pressable,
   TouchableWithoutFeedback,
-  Keyboard,//モーダル用
+  Keyboard,
+  ActivityIndicator,//モーダル用
 } from "react-native";
 import { Magnetometer } from 'expo-sensors';
 import { Link, Tabs } from 'expo-router';//モーダル用
-import MapView, { MapMarker } from "react-native-maps";
+import MapView, { LatLng, MapMarker } from "react-native-maps";
 import MapViewDirections, {
   MapDirectionsResponse,
 } from "react-native-maps-directions";
@@ -93,6 +94,7 @@ const Home: React.FC = () => {
     time: 0,
     distance: 0,
     heading: 0,
+    customMarker: 0,
   });
 
   /**
@@ -105,7 +107,6 @@ const Home: React.FC = () => {
   */
   useEffect(() => {
     getLiveLocation();
-    
   }, []);
 
   /**
@@ -192,13 +193,12 @@ const Home: React.FC = () => {
   const [heading, setHeading] = useState(0);
 
   useEffect(() => {
-    // console.log("Heading:", heading);
     let magnetometerSubscription: any;
     const subscribeToMagnetometer = async () => {
       try {
         await Magnetometer.setUpdateInterval(1000);
         magnetometerSubscription = Magnetometer.addListener((data) => {
-          const { x, y, } = data;
+          const { x, y } = data;
           const newHeading = calculateHeading(x, y);
           setHeading(newHeading);
         });
@@ -214,7 +214,9 @@ const Home: React.FC = () => {
         magnetometerSubscription.remove();
       }
     };
-  }, [heading]);
+  }, []);
+  
+
   
 
 const calculateHeading = (x: number, y: number) => {
@@ -264,15 +266,20 @@ const calculateHeading = (x: number, y: number) => {
     };
     if (Platform.OS === "android") {
       if (markerRef.current) {
-        markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000);
-      } else {
-        Animated.timing(coordinate, {
-          toValue: { x: newCoordinate.latitude, y: newCoordinate.longitude },
-          useNativeDriver: false,
-        }).start();
+        markerRef.current.animateMarkerToCoordinate(newCoordinate, 7000); // Android用のアニメーション
       }
+    } else {
+      Animated.timing(coordinate, {
+        toValue: new Animated.ValueXY({
+          x: newCoordinate.latitude,
+          y: newCoordinate.longitude,
+        }),
+        duration: 7000,
+        useNativeDriver: false,
+      }).start(); // iOS用のアニメーション
     }
   };
+  
 
   const onCenter = () => {
     mapRef.current?.animateToRegion({
@@ -321,7 +328,7 @@ const calculateHeading = (x: number, y: number) => {
   const handleMapPress = (event: any) => {
     const { coordinate } = event.nativeEvent;
     setCustomMarker(coordinate);
-    console.log('Pinned coordinate:', coordinate);
+    // console.log('Pinned coordinate:', coordinate);
     setShowGoButton(true);
   };
   // 「ここへ行く」ボタンをタップした時の処理
@@ -355,6 +362,9 @@ const calculateHeading = (x: number, y: number) => {
             },
           }));
           setInitialLocationFetched(true); // Location is fetched
+          SplashScreen.hideAsync();
+          // setCoordinate(latitude, longitude);
+          // updateCurLoc();
         } catch (error) {
           console.log("Error while getting current location: ", error);
         }
@@ -363,6 +373,27 @@ const calculateHeading = (x: number, y: number) => {
 
     fetchInitialLocation();
   }, []);
+
+  // 経路の座標から縮尺を計算するための適切な余白を決定
+  if (!initialLocationFetched) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors[colorScheme].text} />
+      </View>
+    );
+  }
+
+  const calculateEdgePadding = (coordinates: LatLng[]) => {
+    const mapDimensions = Dimensions.get("window");
+    const edgePadding = 50;
+    return {
+      top: edgePadding,
+      right: edgePadding,
+      bottom: edgePadding,
+      left: edgePadding,
+    };
+  };
+  
 
   return (
     <TouchableWithoutFeedback  onPress={Keyboard.dismiss}>
@@ -394,12 +425,12 @@ const calculateHeading = (x: number, y: number) => {
                   longitude: state.coordinate.y,
                 }}
               >
-                <Image
+                <Animated.Image
                   source={imagePath.icLocation}
                   style={{
                     width: 30,
                     height: 30,
-                    transform: [{ rotate: `${state.heading}deg` }],
+                    transform: [{ rotate: `${heading}deg` }],
                   }}
                   resizeMode="contain"
                 />
@@ -431,15 +462,11 @@ const calculateHeading = (x: number, y: number) => {
                 mode="WALKING"
                 precision="high"
                 onReady={(result) => {
+                  // console.log("Coordinates:", result.coordinates);
                   setDirections(result);
                   fetchTime(result.distance, result.duration);
                   mapRef.current?.fitToCoordinates(result.coordinates, {
-                    edgePadding: {
-                      right: Dimensions.get("window").width / 20,
-                      bottom: Dimensions.get("window").height / 4,
-                      left: Dimensions.get("window").width / 20,
-                      top: Dimensions.get("window").height / 8,
-                    },
+                    edgePadding: calculateEdgePadding(result.coordinates),
                   });
                 }}
                 onError={(errorMessage) => {
@@ -479,8 +506,9 @@ const calculateHeading = (x: number, y: number) => {
           </TouchableOpacity>
           {showGoButton && (
             <TouchableOpacity
-              style={[styles.goButton, { left: (Dimensions.get('window').width - 200) / 2 }]}
-              onPress={handleGoToLocation}
+              style={[styles.goButton, { left: (Dimensions.get('window').width - 200) / 2 },
+                ]}
+                onPress={handleGoToLocation}
             >
               <Text style={styles.goButtonText}>ここへ行く</Text>
             </TouchableOpacity>
@@ -548,6 +576,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default Home;
