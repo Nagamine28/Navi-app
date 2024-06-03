@@ -21,7 +21,7 @@ export default function useNotification() {
 export const scheduleNotificationAsync = async () => {
   await Notifications.scheduleNotificationAsync({
     content: {
-      body: "test",
+      body: "曲がり角に近づきました",
     },
     trigger: {
       seconds: 3,
