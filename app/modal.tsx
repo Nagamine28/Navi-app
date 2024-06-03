@@ -13,20 +13,25 @@ export default function ModalScreen() {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
   const [isMovie, setIsMovie] = React.useState(false);
+  const [playMovieUrl, setPlayMovieUrl] = React.useState(movieUrl);
+
+  React.useEffect(() => {
+    console.log(playMovieUrl);
+  }, []);
 
 
   // Test
   // const background = require("../assets/videos/test.mp4");
   return (
     <View style={styles.container}>
-      {isMovie ? (
+      {playMovieUrl ? (
         <Video
           ref={video}
           style={styles.video}
           // Test
           // source={background}
           source={{
-            uri: { ...getVideoUrl(testVal) },
+            uri: playMovieUrl,
           }}
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}
@@ -35,7 +40,7 @@ export default function ModalScreen() {
         />
       ) : (
         <>
-          <SentMovie/>
+          <SentMovie />
         </>
       )}
     </View>

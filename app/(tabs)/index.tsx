@@ -390,7 +390,7 @@ const calculateHeading = (x: number, y: number) => {
 }
 
   return (
-    <TouchableWithoutFeedback  onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.overlay} />
         {distance !== 0 && time !== 0 && (
@@ -400,8 +400,8 @@ const calculateHeading = (x: number, y: number) => {
           </View>
         )}
         <View style={{ flex: 1 }}>
-        {initialLocationFetched ? (
-          <MapView
+          {initialLocationFetched ? (
+            <MapView
               ref={mapRef}
               style={StyleSheet.absoluteFill}
               initialRegion={{
@@ -431,51 +431,51 @@ const calculateHeading = (x: number, y: number) => {
               </MapMarker.Animated>
 
               {customMarker && (
-              <MapMarker
-              coordinate={customMarker}
-              title="Pinned Location"
-              description={`Latitude: ${customMarker.latitude}, Longitude: ${customMarker.longitude}`}
-            />
-            )}
+                <MapMarker
+                  coordinate={customMarker}
+                  title="Pinned Location"
+                  description={`Latitude: ${customMarker.latitude}, Longitude: ${customMarker.longitude}`}
+                />
+              )}
 
-            {Object.keys(destinationCords).length > 0 && (
-              <MapMarker
-                coordinate={destinationCords}
-                image={imagePath.icGreenMarker}
-              />
-            )}
+              {Object.keys(destinationCords).length > 0 && (
+                <MapMarker
+                  coordinate={destinationCords}
+                  image={imagePath.icGreenMarker}
+                />
+              )}
 
-            {Object.keys(destinationCords).length > 0 && (
-              <MapViewDirections
-                origin={curLoc}
-                destination={destinationCords}
-                apikey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || ""}
-                strokeWidth={6}
-                strokeColor="red"
-                optimizeWaypoints={true}
-                mode="WALKING"
-                precision="high"
-                onReady={(result) => {
-                  setDirections(result);
-                  fetchTime(result.distance, result.duration);
-                  mapRef.current?.fitToCoordinates(result.coordinates, {
-                    edgePadding: {
-                      right: Dimensions.get("window").width / 20,
-                      bottom: Dimensions.get("window").height / 4,
-                      left: Dimensions.get("window").width / 20,
-                      top: Dimensions.get("window").height / 8,
-                    },
-                  });
-                }}
-                onError={(errorMessage) => {
-                  console.log("GOT AN ERROR", errorMessage);
-                }}
-              />
-            )}
-          </MapView>
-        ) : (
-          <Text>Loading...</Text>
-        )}
+              {Object.keys(destinationCords).length > 0 && (
+                <MapViewDirections
+                  origin={curLoc}
+                  destination={destinationCords}
+                  apikey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || ""}
+                  strokeWidth={6}
+                  strokeColor="red"
+                  optimizeWaypoints={true}
+                  mode="WALKING"
+                  precision="high"
+                  onReady={(result) => {
+                    setDirections(result);
+                    fetchTime(result.distance, result.duration);
+                    mapRef.current?.fitToCoordinates(result.coordinates, {
+                      edgePadding: {
+                        right: Dimensions.get("window").width / 20,
+                        bottom: Dimensions.get("window").height / 4,
+                        left: Dimensions.get("window").width / 20,
+                        top: Dimensions.get("window").height / 8,
+                      },
+                    });
+                  }}
+                  onError={(errorMessage) => {
+                    console.log("GOT AN ERROR", errorMessage);
+                  }}
+                />
+              )}
+            </MapView>
+          ) : (
+            <Text>Loading...</Text>
+          )}
           <TouchableOpacity
             style={{
               position: "absolute",
@@ -487,19 +487,25 @@ const calculateHeading = (x: number, y: number) => {
             <Image source={imagePath.greenIndicator} />
           </TouchableOpacity>
           {/**モーダル用 */}
-        <TouchableOpacity
-            style = {{
-              position : "absolute",
-              bottom : 25,
-              left : 10,
-              backgroundColor : "white",
-            }}>
-            <Link href={{
-              pathname: "/modal",
-              params: {
-                movieUrl: {...getVideoUrl(testVal)},
-              }
-            }} style={styles.modal} asChild>
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              bottom: 25,
+              left: 10,
+              backgroundColor: "white",
+            }}
+          >
+            <Link
+              href={{
+                pathname: "/modal",
+                params: {
+                  // movieUrl:  "test" ,
+                  movieUrl: "http://13.231.236.238/IMG_4402.mp4",
+                },
+              }}
+              style={styles.modal}
+              asChild
+            >
               <Pressable>
                 {({ pressed }) => (
                   <MaterialIcons name="play-circle" size={35} color="black" />
@@ -509,7 +515,10 @@ const calculateHeading = (x: number, y: number) => {
           </TouchableOpacity>
           {showGoButton && (
             <TouchableOpacity
-              style={[styles.goButton, { left: (Dimensions.get('window').width - 200) / 2 }]}
+              style={[
+                styles.goButton,
+                { left: (Dimensions.get("window").width - 200) / 2 },
+              ]}
               onPress={handleGoToLocation}
             >
               <Text style={styles.goButtonText}>ここへ行く</Text>
