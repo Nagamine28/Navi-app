@@ -35,6 +35,8 @@ import imagePath from "../../constants/imagePath";
 import InputDestinationArea from "@/components/InputDestinationArea";
 import { FontAwesome } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import useNotification from "@/components/useNotification";
+import { scheduleNotificationAsync } from '@/components/useNotification';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,6 +54,9 @@ const Home: React.FC = () => {
   // 経路探索後結果を固定するためのFlag
   const [flag, setFlag] = useState<boolean>(true);
   const [initialFocusDone, setInitialFocusDone] = useState<boolean>(false);
+
+  // 通知権限の認可
+  useNotification();
 
   /*
   ====================

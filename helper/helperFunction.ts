@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { LocationObject } from 'expo-location';
 
 import { Steps } from './types';
+import { scheduleNotificationAsync } from '@/components/useNotification';
 
 const DetectionDistance = 0.1 // 10m
 
@@ -65,6 +66,7 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
           
           const videoUrl = getVideoUrl(params);
           // console.log(await videoUrl);
+          scheduleNotificationAsync();
       }
       return stepsPosition;
     }
