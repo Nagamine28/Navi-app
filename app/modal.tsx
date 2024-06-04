@@ -4,23 +4,34 @@ import { Video, ResizeMode } from "expo-av";
 import { Text, View } from "@/components/Themed";
 import React from "react";
 import SentMovie from "@/components/SentMovie";
+import { getVideoUrl } from '@/helper/helperFunction';
+import { Steps } from '@/helper/types';
+import { useLocalSearchParams } from "expo-router";
 
 export default function ModalScreen() {
+  const { movieUrl } = useLocalSearchParams();
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
   const [isMovie, setIsMovie] = React.useState(false);
+  const [playMovieUrl, setPlayMovieUrl] = React.useState(movieUrl);
+
+  React.useEffect(() => {
+    console.log(playMovieUrl);
+  }, []);
+
+
   // Test
   // const background = require("../assets/videos/test.mp4");
   return (
     <View style={styles.container}>
-      {isMovie ? (
+      {playMovieUrl ? (
         <Video
           ref={video}
           style={styles.video}
           // Test
           // source={background}
           source={{
-            uri: "http://18.176.53.200/big_buck_bunny.mp4",
+            uri: playMovieUrl,
           }}
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}
@@ -29,7 +40,7 @@ export default function ModalScreen() {
         />
       ) : (
         <>
-          <SentMovie/>
+          <SentMovie />
         </>
       )}
     </View>
