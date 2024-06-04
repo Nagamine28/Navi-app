@@ -177,7 +177,8 @@ const Home: React.FC = () => {
     const [updatedStepsPosition , videoUrl]= await checkSteps(state.curLoc, corners);
     setCorners([]);
     setCorners(updatedStepsPosition);
-    setModalUrl(videoUrl)
+    const stringVideoUrl = JSON.stringify(await videoUrl);
+    setModalUrl(await stringVideoUrl.replace(/\n/g, ''));
   };
 
   /**

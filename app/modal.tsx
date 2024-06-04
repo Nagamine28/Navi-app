@@ -16,7 +16,7 @@ export default function ModalScreen() {
   const [playMovieUrl, setPlayMovieUrl] = React.useState(movieUrl);
 
   React.useEffect(() => {
-    console.log(playMovieUrl);
+    console.log("movieUrl" + playMovieUrl);
   }, []);
 
 
