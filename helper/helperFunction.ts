@@ -65,7 +65,8 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
           };
           
           videoUrl = getVideoUrl(params);
-          // console.log(await videoUrl);
+          console.log("video Url" + await videoUrl);
+          // await new Promise(resolve => setTimeout(resolve, 5000))
         await scheduleNotificationAsync();
         return [stepsPosition , videoUrl];
       }
@@ -78,7 +79,7 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
 export const getVideoUrl = async (params: { previousStep: Steps, currentStep: Steps, nextStep: Steps }) : Promise<String | undefined> => {
   try {
     console.log("params:", params);
-    const response = await fetch('https://0c15-42-148-193-222.ngrok-free.app/api/video', {
+    const response = await fetch('https://57.180.253.112/api/video', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

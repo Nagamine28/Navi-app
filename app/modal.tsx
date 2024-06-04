@@ -16,7 +16,7 @@ export default function ModalScreen() {
   const [playMovieUrl, setPlayMovieUrl] = React.useState(movieUrl);
 
   React.useEffect(() => {
-    console.log(playMovieUrl);
+    console.log("movieUrl " + playMovieUrl[0]);
   }, []);
 
 
@@ -31,7 +31,7 @@ export default function ModalScreen() {
           // Test
           // source={background}
           source={{
-            uri: playMovieUrl,
+            uri: playMovieUrl.slice(1, -3),
           }}
           useNativeControls
           resizeMode={ResizeMode.CONTAIN}
