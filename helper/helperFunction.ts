@@ -56,7 +56,7 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
   for (let step of stepsPosition) {
     if (!step.check) {
       const distance = getDistanceFromLatLonInKm(curLoc.latitude, curLoc.longitude, step.latitude, step.longitude);      
-      // if (distance <= DetectionDistance) {
+      if (distance <= DetectionDistance) {
           step.check = true;
           const params = {
             previousStep: stepsPosition[stepsPosition.indexOf(step) - 1],
@@ -69,7 +69,7 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
           // await new Promise(resolve => setTimeout(resolve, 5000))
         await scheduleNotificationAsync();
         return [stepsPosition , videoUrl];
-      // }
+      }
       
     }
   }
@@ -79,7 +79,7 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
 export const getVideoUrl = async (params: { previousStep: Steps, currentStep: Steps, nextStep: Steps }) : Promise<String | undefined> => {
   try {
     console.log("params:", params);
-    const response = await fetch('https://5681-125-103-213-138.ngrok-free.app/api/video', {
+    const response = await fetch('https://57.180.253.112/api/video', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
