@@ -74,6 +74,7 @@ const Home: React.FC = () => {
   const [directions, setDirections] = useState<MapDirectionsResponse | null>(
     null
   );
+  const [ modalUrl , setModalUrl] = useState("")  
 
   /**
    * Stateの更新
@@ -173,9 +174,10 @@ const Home: React.FC = () => {
   };
 
   const fetchSteps = async () => {
-    const updatedStepsPosition = await checkSteps(state.curLoc, corners);
+    const [updatedStepsPosition , videoUrl]= await checkSteps(state.curLoc, corners);
     setCorners([]);
     setCorners(updatedStepsPosition);
+    setModalUrl(videoUrl)
   };
 
   /**
@@ -505,7 +507,7 @@ const calculateHeading = (x: number, y: number) => {
                 pathname: "/modal",
                 params: {
                   // movieUrl:  "test" ,
-                  movieUrl: "http://13.231.236.238/IMG_4402.mp4",
+                  movieUrl: modalUrl,
                 },
               }}
               style={styles.modal}

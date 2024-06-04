@@ -49,10 +49,10 @@ function deg2rad(deg: number) {
 
 
 export const checkSteps = async (curLoc: { latitude: number, longitude: number },
-  stepsPosition: Steps[]): Promise<Steps[]> => {
+  stepsPosition: Steps[]): Promise<[Steps[] , String]> => {
 
   // const { curLoc } = state;
-
+  let videoUrl = ""
   for (let step of stepsPosition) {
     if (!step.check) {
       const distance = getDistanceFromLatLonInKm(curLoc.latitude, curLoc.longitude, step.latitude, step.longitude);      
@@ -64,11 +64,12 @@ export const checkSteps = async (curLoc: { latitude: number, longitude: number }
             nextStep: stepsPosition[stepsPosition.indexOf(step) + 1]
           };
           
-          const videoUrl = getVideoUrl(params);
+          videoUrl = getVideoUrl(params);
           // console.log(await videoUrl);
-          scheduleNotificationAsync();
+        await scheduleNotificationAsync();
+        return [stepsPosition , videoUrl];
       }
-      return stepsPosition;
+      
     }
   }
   return stepsPosition;
