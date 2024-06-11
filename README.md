@@ -46,7 +46,7 @@ Expoの立ち上げコマンドをターミナルに打ちQRコードをスマ�
 ### 検索機能
 テキストボックスをタッチして、行きたい場所を入力し検索ボタンかEnterキーを押すと現在地から目的地までの経路が表示されます。
 
-<video src="assets\videos\guide.mp4" controls="true" width="200"></video>
+<img src="assets\videos\guide.gif" controls="true" width="200"></img>
 
 ### ナビゲーション
 経路に沿って目的地まで移動している最、曲がり角に近づいた時動画を表示します。
