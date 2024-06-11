@@ -1,4 +1,5 @@
-import React from "react";
+import { useNavigation } from '@react-navigation/native';
+import React, { useState, useRef, useEffect } from "react";
 import {
   Text,
   StyleSheet,
@@ -16,10 +17,8 @@ interface Coordinate {
 }
 
 interface Props {
-  curLoc: Coordinate;
   setCoordinate: (lat: number, lng: number) => void;
-  setCurLoc: React.Dispatch<React.SetStateAction<Coordinate>>;
-  // updateCurLoc: () => void;
+  updateCurLoc: () => void;
 }
 
 /**
@@ -31,6 +30,12 @@ export const InputDestinationArea = (props : Props) => {
   Geocoder.init(apiKey, { language: "ja" });
 
   const [SearchAddress, onChangeSearchAddress] = React.useState("");
+  const [destinationCords, setDestinationCords] = useState<Coordinate>({
+    latitude: 0,
+    longitude: 0,
+    
+  });
+
 
   /**
    * 緯度経度の検索
@@ -41,8 +46,13 @@ export const InputDestinationArea = (props : Props) => {
       return;
     }
     await Geocoder.from(SearchAddress)
-    .then((json) => {
-      var location = json.results[0].geometry.location;
+      .then((json) => {
+        var location = json.results[0].geometry.location;
+        setDestinationCords({
+          latitude: location.lat,
+          longitude: location.lng,
+        });
+        props.updateCurLoc();
         props.setCoordinate(location.lat, location.lng);
       })
       .catch((error) => console.warn(error));
